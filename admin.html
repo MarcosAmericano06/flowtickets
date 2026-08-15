@@ -294,6 +294,33 @@
 </head>
 <body>
 
+  <!-- Tela de login (aparece so quando a nuvem esta ligada e ninguem logado) -->
+  <div id="flow-login" style="display:none; position:fixed; inset:0; z-index:9999;
+       background:#0c0a10; color:#fff; align-items:center; justify-content:center;
+       font-family:Archivo,system-ui,sans-serif;">
+    <form id="flow-login-form" style="width:min(360px,90vw); background:#16121f;
+          padding:32px 28px; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
+      <div style="display:flex; align-items:center; gap:8px; font-weight:900;
+           font-size:22px; margin-bottom:4px;">
+        <img src="FLOW-LOGOSIMPLES-PNG.png" alt="Flow" style="height:26px;">FLOW
+        <small style="opacity:.7; font-weight:600;">Admin</small>
+      </div>
+      <p style="margin:0 0 20px; opacity:.7; font-size:14px;">Entre para editar os eventos.</p>
+      <label style="display:block; font-size:13px; opacity:.8; margin-bottom:6px;">E-mail</label>
+      <input id="flow-login-email" type="email" autocomplete="username" required
+             style="width:100%; box-sizing:border-box; padding:12px; margin-bottom:14px;
+             border-radius:10px; border:1px solid #33304a; background:#0c0a10; color:#fff;">
+      <label style="display:block; font-size:13px; opacity:.8; margin-bottom:6px;">Senha</label>
+      <input id="flow-login-senha" type="password" autocomplete="current-password" required
+             style="width:100%; box-sizing:border-box; padding:12px; margin-bottom:18px;
+             border-radius:10px; border:1px solid #33304a; background:#0c0a10; color:#fff;">
+      <button type="submit" style="width:100%; padding:13px; border:0; border-radius:10px;
+              font-weight:800; font-size:15px; color:#fff; cursor:pointer;
+              background:linear-gradient(90deg,#ff4438 0%,#ff2668 45%,#7a2ff7 100%);">Entrar</button>
+      <p id="flow-login-erro" style="color:#ff8080; font-size:13px; margin:14px 0 0; min-height:16px;"></p>
+    </form>
+  </div>
+
   <header>
     <div class="logo"><img src="FLOW-LOGOSIMPLES-PNG.png" alt="Flow">FLOW<small>Admin</small></div>
     <a class="ver-site" href="index.html">Ver o site →</a>
@@ -469,6 +496,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="flow-cloud.js?v=1"></script>
   <script src="eventos.js?v=20260805d"></script>
   <script>
     (function () {
@@ -490,6 +518,18 @@
       function salvar() {
         flowSalvarEventos(eventos);
         desenharTudo();
+        sincronizarNuvem();
+      }
+
+      // Publica os eventos + config atuais no banco central (se a nuvem
+      // estiver ligada). Assim a mudanca aparece pra todos os visitantes.
+      function sincronizarNuvem() {
+        if (!(window.FlowCloud && FlowCloud.ativo())) return;
+        FlowCloud.salvar(eventos, flowCarregarConfig())
+          .then(function () { avisar('Publicado no ar ✓'); })
+          .catch(function (e) {
+            avisar('Erro ao publicar na nuvem: ' + (e && e.message ? e.message : e));
+          });
       }
 
       function desenharResumo() {
@@ -828,6 +868,7 @@
         desenharNumeros();
         preencherSelectNumeros();
         avisar('WhatsApps salvos.');
+        sincronizarNuvem();
       });
 
       // Backup
@@ -1268,6 +1309,47 @@
       desenharNumeros();
       preencherSelectNumeros();
       desenharTudo();
+
+      // ===== Nuvem: login e carga inicial =====
+      // Se a nuvem estiver ligada, exige login antes de editar e carrega os
+      // eventos centrais. Se estiver desligada, o painel funciona como antes
+      // (dados so no navegador), sem pedir login.
+      (function () {
+        if (!(window.FlowCloud && FlowCloud.ativo())) return;
+
+        var overlay = document.getElementById('flow-login');
+        var formLogin = document.getElementById('flow-login-form');
+        var erro = document.getElementById('flow-login-erro');
+
+        overlay.style.display = 'flex'; // mostra o login ate confirmar a sessao
+
+        formLogin.addEventListener('submit', function (e) {
+          e.preventDefault();
+          erro.textContent = '';
+          var email = document.getElementById('flow-login-email').value.trim();
+          var senha = document.getElementById('flow-login-senha').value;
+          FlowCloud.login(email, senha).catch(function (err) {
+            erro.textContent = 'E-mail ou senha invalidos.';
+            console.warn('Login falhou:', err);
+          });
+        });
+
+        FlowCloud.onAuth(function (usuario) {
+          if (!usuario) { overlay.style.display = 'flex'; return; }
+          overlay.style.display = 'none';
+          // Logado: puxa os eventos e a config do banco central.
+          FlowCloud.carregar().then(function (dados) {
+            if (dados && dados.eventos) {
+              eventos = dados.eventos;
+              flowSalvarEventos(eventos);
+            }
+            if (dados && dados.config) flowSalvarConfig(dados.config);
+            desenharTudo();
+            desenharNumeros();
+            preencherSelectNumeros();
+          }).catch(function (err) { console.warn('Carga da nuvem falhou:', err); });
+        });
+      })();
     })();
   </script>
 
