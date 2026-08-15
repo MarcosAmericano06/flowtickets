@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Tickets — Ingressos para os melhores eventos</title>
+  <meta name="description" content="Flow Tickets: máquina de distribuição para entretenimento. Ingressos com segurança para os maiores eventos do país.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Marca */
+      --vermelho: #ff4438;
+      --magenta:  #ff2668;
+      --magenta-escuro: #d31760;
+      --roxo:     #7a2ff7;
+      --laranja:  #ff7a1a;
+      --gradiente: linear-gradient(90deg, #ff4438 0%, #ff2668 45%, #7a2ff7 100%);
+
+      /* Superfícies escuras (hero / faixas de marca) */
+      --preto:   #0c0a10;
+      --preto-2: #16121f;
+
+      /* Superfícies claras (conteúdo) */
+      --fundo:      #f5f3f8;
+      --superficie: #ffffff;
+      --tinta:      #17121f;
+      --tinta-2:    #6a6478;
+      --borda:      #e8e4f0;
+
+      --branco: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Archivo', -apple-system, sans-serif;
+      background: var(--fundo);
+      color: var(--tinta);
+    }
+
+    /* ===== Cabeçalho ===== */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 16px 48px;
+      background: rgba(12, 10, 16, 0.9);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .logo img { height: 26px; width: auto; display: block; }
+    .logo .logo-texto {
+      font-weight: 900;
+      font-size: 24px;
+      letter-spacing: 1px;
+      color: var(--branco);
+    }
+
+    .busca {
+      flex: 1;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      padding: 10px 18px;
+    }
+    .busca:focus-within { border-color: rgba(255, 38, 104, 0.7); }
+    .busca input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--branco);
+      font-family: inherit;
+      font-size: 15px;
+    }
+    .busca input::placeholder { color: rgba(255, 255, 255, 0.5); }
+
+    nav {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    nav a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    nav a:hover { color: #ff5c8a; }
+
+    /* ===== Hero ===== */
+    .hero {
+      position: relative;
+      padding: 118px 48px 128px;
+      background: var(--preto) url('flow-hero.png') no-repeat right center / cover;
+      color: var(--branco);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(12,10,16,0.92) 28%, rgba(12,10,16,0.35) 62%, rgba(12,10,16,0) 88%);
+    }
+    .hero .miolo {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .hero .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--branco);
+      background: rgba(255, 122, 26, 0.14);
+      border: 1px solid rgba(255, 122, 26, 0.55);
+      border-radius: 999px;
+      padding: 8px 18px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5.4vw, 68px);
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 1.05;
+      max-width: 640px;
+      margin-bottom: 22px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: var(--gradiente);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 19px;
+      max-width: 520px;
+      margin-bottom: 40px;
+      color: rgba(255, 255, 255, 0.78);
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 40px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .btn-primario {
+      background: var(--laranja);
+      color: var(--branco);
+      box-shadow: 0 12px 30px rgba(255, 122, 26, 0.32);
+    }
+    .btn-primario:hover { filter: brightness(1.08); }
+    .btn-secundario {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: var(--branco);
+    }
+    .btn-secundario:hover { border-color: #ff5c8a; background: rgba(255, 38, 104, 0.12); }
+
+    .hero-botoes {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== Faixa de destaques ===== */
+    .destaques {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0;
+      background: var(--superficie);
+      color: var(--tinta);
+      border-radius: 28px;
+      margin: -70px auto 0;
+      max-width: 1100px;
+      position: relative;
+      z-index: 5;
+      padding: 36px 24px;
+      box-shadow: 0 24px 60px rgba(20, 16, 30, 0.14);
+      border: 1px solid var(--borda);
+    }
+    .destaque {
+      flex: 1;
+      min-width: 240px;
+      text-align: center;
+      padding: 0 24px;
+      border-right: 1px solid var(--borda);
+    }
+    .destaque:last-child { border-right: none; }
+    .destaque .icone {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: var(--gradiente);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .destaque .icone svg { width: 26px; height: 26px; stroke: var(--branco); }
+    .destaque h3 { font-size: 17px; font-weight: 800; color: var(--tinta); }
+
+    /* ===== Filtros ===== */
+    .filtros {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 56px 24px 8px;
+    }
+    .filtros button {
+      padding: 13px 30px;
+      border-radius: 999px;
+      border: 1px solid var(--borda);
+      background: var(--superficie);
+      color: var(--tinta);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .filtros button:hover,
+    .filtros button.ativo {
+      background: var(--gradiente);
+      border-color: transparent;
+      color: var(--branco);
+    }
+
+    /* ===== Vitrine de eventos ===== */
+    .eventos {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .eventos h2 {
+      font-size: 30px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      color: var(--tinta);
+    }
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 6px 20px rgba(20, 16, 30, 0.06);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--magenta);
+      box-shadow: 0 16px 34px rgba(20, 16, 30, 0.14);
+    }
+    .card .capa {
+      position: relative;
+      height: 300px;
+      background: var(--gradiente);
+    }
+    .card .capa img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card .selo {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--gradiente);
+      color: var(--branco);
+    }
+    .card .selo.esgotado { background: rgba(12, 10, 16, 0.9); }
+    .card .info { padding: 20px; }
+    .card .tipos { font-size: 13px; color: var(--tinta-2); margin-bottom: 14px; }
+    .card details { margin-bottom: 14px; }
+    .card details summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--magenta-escuro);
+      list-style: none;
+    }
+    .card details summary::before { content: '+ '; }
+    .card details[open] summary::before { content: '− '; }
+    .card details p {
+      font-size: 13px;
+      color: var(--tinta-2);
+      line-height: 1.5;
+      margin-top: 8px;
+      white-space: pre-line;
+    }
+    .card .data {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--magenta-escuro);
+      margin-bottom: 6px;
+    }
+    .card h3 { font-size: 19px; font-weight: 800; margin-bottom: 4px; color: var(--tinta); }
+    .card .local { font-size: 14px; color: var(--tinta-2); margin-bottom: 12px; }
+    .card .preco-linha {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .card .preco {
+      font-size: 18px;
+      font-weight: 900;
+      background: var(--gradiente);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card .lote {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--magenta-escuro);
+      background: rgba(255, 38, 104, 0.1);
+      border: 1px solid rgba(255, 38, 104, 0.35);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+    .card .ficha { font-size: 13px; color: var(--tinta-2); line-height: 1.6; margin-top: 8px; }
+    .card .ficha b { color: var(--tinta); font-weight: 700; }
+
+    /* Aviso de indicação (promoter) */
+    .aviso-promoter {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: none;
+    }
+    .aviso-promoter.on { display: block; }
+    .aviso-promoter .caixa {
+      background: rgba(122, 47, 247, 0.08);
+      border: 1px solid rgba(122, 47, 247, 0.35);
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 14px;
+      color: var(--tinta);
+    }
+    .aviso-promoter b { color: var(--magenta-escuro); }
+    .card .comprar {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--tinta);
+      text-decoration: none;
+      border-bottom: 2px solid var(--laranja);
+      padding-bottom: 2px;
+    }
+
+    .vazio {
+      text-align: center;
+      font-size: 17px;
+      color: var(--tinta-2);
+      padding: 40px 0;
+    }
+    .vazio[hidden] { display: none; }
+
+    /* ===== Chamada final (faixa escura de marca) ===== */
+    .cta-final {
+      text-align: center;
+      padding: 84px 24px;
+      color: var(--branco);
+      background:
+        radial-gradient(ellipse 60% 60% at 15% 20%, rgba(255, 68, 56, 0.25), transparent),
+        radial-gradient(ellipse 60% 60% at 85% 80%, rgba(122, 47, 247, 0.3), transparent),
+        var(--preto);
+    }
+    .cta-final h2 {
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .cta-final p {
+      color: rgba(255, 255, 255, 0.72);
+      margin-bottom: 32px;
+      font-size: 17px;
+    }
+    .cta-grade {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .cta-bloco {
+      flex: 1;
+      min-width: 300px;
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .cta-bloco:last-child { border-right: none; }
+    .cta-bloco h2 { font-size: clamp(24px, 3vw, 36px); }
+    .cta-bloco p { max-width: 380px; }
+    .cta-bloco .btn { margin-top: auto; }
+
+    /* ===== Sobre nós (faixa escura de marca) ===== */
+    .sobre {
+      position: relative;
+      padding: 100px 24px;
+      color: var(--branco);
+      background:
+        radial-gradient(circle at 82% 25%, rgba(255, 122, 26, 0.35), transparent 55%),
+        radial-gradient(circle at 12% 82%, rgba(255, 38, 104, 0.3), transparent 55%),
+        linear-gradient(160deg, #0c0a10 0%, #1b1030 100%);
+      overflow: hidden;
+    }
+    .sobre .miolo { max-width: 1100px; margin: 0 auto; }
+    .sobre .rotulo {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--laranja);
+      margin-bottom: 20px;
+    }
+    .sobre .manifesto {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 900;
+      line-height: 1.2;
+      max-width: 820px;
+      margin-bottom: 28px;
+    }
+    .sobre .manifesto em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--laranja), var(--magenta));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sobre .texto {
+      font-size: 18px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.78);
+      max-width: 640px;
+      margin-bottom: 64px;
+    }
+    .diferenciais {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+    .dif {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 28px 24px;
+    }
+    .dif .icone {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--gradiente);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .dif .icone svg { width: 24px; height: 24px; stroke: var(--branco); }
+    .dif h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+    .dif p { font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.68); }
+
+    /* ===== Rodapé (escuro) ===== */
+    footer {
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--preto);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+    footer .redes { display: flex; gap: 20px; }
+    footer .redes a { color: var(--branco); text-decoration: none; font-weight: 600; }
+    footer .redes a:hover { color: #ff5c8a; }
+
+    /* Card clicável (abre a tela de detalhe) */
+    .card { cursor: pointer; }
+
+    /* ===== Modal de detalhe do evento ===== */
+    .modal-fundo {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(8, 6, 12, 0.72);
+      backdrop-filter: blur(6px);
+      overflow-y: auto;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .modal-fundo.on { display: block; opacity: 1; }
+
+    .modal {
+      max-width: 720px;
+      margin: 40px auto 120px;
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: 26px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .modal-fechar {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 3;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(12, 10, 16, 0.55);
+      color: var(--branco);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+    .modal-fechar:hover { background: rgba(255, 38, 104, 0.7); }
+
+    .modal-capa {
+      position: relative;
+      height: 340px;
+      background: var(--gradiente);
+    }
+    .modal-capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-capa::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, var(--superficie) 3%, transparent 55%);
+    }
+    .modal-selo {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 2;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--gradiente);
+      color: var(--branco);
+    }
+    .modal-selo.esgotado { background: rgba(12, 10, 16, 0.9); }
+
+    .modal-corpo { padding: 4px 32px 32px; }
+    .modal-data {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--magenta-escuro);
+      margin-bottom: 8px;
+    }
+    .modal-corpo h2 { font-size: 30px; font-weight: 900; line-height: 1.15; margin-bottom: 8px; color: var(--tinta); }
+    .modal-local { font-size: 15px; color: var(--tinta-2); margin-bottom: 20px; }
+
+    .modal-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .modal-chip {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--tinta-2);
+      background: var(--fundo);
+      border: 1px solid var(--borda);
+      border-radius: 999px;
+      padding: 6px 14px;
+    }
+
+    .modal-secao { margin-bottom: 26px; }
+    .modal-secao h4 {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--laranja);
+      margin-bottom: 12px;
+    }
+    .modal-secao p { font-size: 15px; line-height: 1.65; color: #3f3a4a; white-space: pre-line; }
+    .modal-ficha { font-size: 14px; line-height: 1.8; color: var(--tinta-2); }
+    .modal-ficha b { color: var(--tinta); font-weight: 700; }
+
+    /* Tabela de lotes */
+    .lote-linha {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--borda);
+      margin-bottom: 10px;
+      background: #faf9fc;
+    }
+    .lote-linha .lote-nome { font-weight: 800; font-size: 15px; color: var(--tinta); }
+    .lote-linha .lote-tag {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--borda);
+      color: var(--tinta-2);
+    }
+    .lote-linha .lote-preco { margin-left: auto; font-weight: 900; font-size: 17px; }
+
+    .lote-linha.encerrado { opacity: 0.5; }
+    .lote-linha.encerrado .lote-preco { text-decoration: line-through; }
+
+    .lote-linha.vigente {
+      border-color: transparent;
+      background: linear-gradient(90deg, rgba(255, 38, 104, 0.12), rgba(122, 47, 247, 0.1));
+      box-shadow: 0 0 0 1px var(--magenta) inset;
+    }
+    .lote-linha.vigente .lote-tag {
+      background: var(--gradiente);
+      border-color: transparent;
+      color: var(--branco);
+    }
+    .lote-linha.vigente .lote-preco {
+      background: var(--gradiente);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .lote-linha.em-breve .lote-tag { color: var(--tinta-2); }
+
+    /* Barra de compra fixa no rodapé do modal */
+    .modal-compra {
+      position: sticky;
+      bottom: 0;
+      background: var(--superficie);
+      border-top: 1px solid var(--borda);
+      padding: 18px 32px 22px;
+    }
+    .modal-lote-atual {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--tinta-2);
+      margin-bottom: 14px;
+    }
+    .modal-lote-atual b { color: var(--tinta); }
+
+    .btn-comprar-grande {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 18px 22px;
+      border-radius: 16px;
+      font-family: inherit;
+      text-decoration: none;
+      color: var(--branco);
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.1s ease;
+    }
+    .btn-comprar-grande + .btn-comprar-grande { margin-top: 12px; }
+    .btn-comprar-grande:hover { filter: brightness(1.08); }
+    .btn-comprar-grande:active { transform: scale(0.99); }
+
+    .btn-comprar-grande .rotulo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .btn-comprar-grande .valor { font-size: 19px; font-weight: 900; white-space: nowrap; }
+    .btn-comprar-grande .valor .risco {
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0.65;
+      text-decoration: line-through;
+      margin-right: 6px;
+    }
+
+    /* Botão 1 — desconto Flow */
+    .btn-comprar-grande.flow {
+      background: var(--gradiente);
+      box-shadow: 0 10px 30px rgba(255, 38, 104, 0.32);
+    }
+    .btn-comprar-grande.flow .off {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.28);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    /* Botão 2 — Pix sem taxa (acento teal do Pix) */
+    .btn-comprar-grande.pix {
+      background: rgba(20, 160, 145, 0.08);
+      border: 1px solid #12a693;
+      color: #0a7d6f;
+    }
+    .btn-comprar-grande.pix .tag-pix { color: #12a693; font-size: 11px; font-weight: 800; }
+
+    .modal-obs { text-align: center; font-size: 12px; color: var(--tinta-2); margin-top: 14px; }
+
+    @media (max-width: 720px) {
+      .modal { margin: 0; border-radius: 0; min-height: 100%; border: none; }
+      .modal-capa { height: 260px; }
+      .modal-corpo { padding: 4px 20px 24px; }
+      .modal-corpo h2 { font-size: 24px; }
+      .modal-compra { padding: 16px 20px 20px; }
+    }
+
+    @media (max-width: 720px) {
+      header { padding: 14px 18px; flex-wrap: wrap; gap: 14px; }
+      .logo .logo-texto { font-size: 22px; }
+      .busca { order: 3; max-width: 100%; width: 100%; }
+      nav { margin-left: 0; gap: 18px; font-size: 14px; flex-wrap: wrap; }
+      nav a { font-size: 14px; }
+
+      .hero { padding: 64px 20px 108px; background-position: 74% center; }
+      .hero::before { background: linear-gradient(90deg, rgba(12,10,16,0.94) 45%, rgba(12,10,16,0.55) 80%, rgba(12,10,16,0.35) 100%); }
+      .hero .eyebrow { font-size: 10px; letter-spacing: 2px; padding: 7px 14px; margin-bottom: 20px; }
+      .hero p { font-size: 16px; }
+      .hero-botoes { flex-direction: column; align-items: stretch; }
+      .hero-botoes .btn { width: 100%; padding: 15px 24px; text-align: center; }
+
+      .destaques { margin: -48px 16px 0; padding: 24px 16px; }
+      .destaque { border-right: none; border-bottom: 1px solid var(--borda); padding: 16px 8px; }
+      .destaque:last-child { border-bottom: none; }
+
+      /* Filtros deslizam de lado em vez de quebrar linha */
+      .filtros {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 40px 16px 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .filtros::-webkit-scrollbar { display: none; }
+      .filtros button { flex: 0 0 auto; padding: 12px 22px; }
+
+      .eventos { padding: 32px 16px 60px; }
+      .eventos h2 { font-size: 24px; }
+      .grade { grid-template-columns: 1fr; gap: 18px; }
+      .card .capa { height: 260px; }
+
+      .cta-final { padding: 60px 20px; }
+      .cta-grade { gap: 48px; }
+      .cta-bloco { border-right: none; padding: 0; }
+      .sobre { padding: 64px 20px; }
+      .sobre .texto { margin-bottom: 44px; }
+
+      footer { flex-direction: column; align-items: flex-start; padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="#">
+      <img src="FLOW-LOGOSIMPLES-PNG.png" alt="Flow">
+      <span class="logo-texto">FLOW</span>
+    </a>
+    <div class="busca">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Buscar evento...">
+    </div>
+    <nav>
+      <a href="#eventos">Todos os Eventos</a>
+      <a href="#sobre">Sobre Nós</a>
+      <a target="_blank" href="https://wa.me/5511996400247">Contato</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="miolo">
+      <span class="eyebrow">Máquina de distribuição para entretenimento</span>
+      <h1>Ingressos para os <em>melhores eventos</em> do país</h1>
+      <p>Compre com segurança, atendimento humano no WhatsApp e entre no flow.</p>
+      <div class="hero-botoes">
+        <a class="btn btn-primario" href="#eventos">Ver Eventos</a>
+        <a class="btn btn-secundario" target="_blank" href="https://wa.me/5511996400247">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="destaques">
+    <div class="destaque">
+      <div class="icone">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <h3>Ingresso na hora, direto no seu celular</h3>
+    </div>
+    <div class="destaque">
+      <div class="icone">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <h3>Os maiores eventos do país</h3>
+    </div>
+    <div class="destaque">
+      <div class="icone">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <h3>Compra 100% segura</h3>
+    </div>
+  </section>
+
+  <div class="filtros">
+    <button data-cat="essa-semana">Essa Semana</button>
+    <button data-cat="semana-que-vem">Semana Que Vem</button>
+    <button data-cat="reveillon">Réveillon</button>
+    <button data-cat="carnaval">Carnaval</button>
+    <button class="ativo" data-cat="todos">Ver Mais</button>
+  </div>
+
+  <div class="aviso-promoter" id="aviso-promoter">
+    <div class="caixa">🎯 Você chegou pela indicação de <b><span id="nome-promoter"></span></b>. Seu contato já vai identificado para a nossa equipe.</div>
+  </div>
+
+  <section class="eventos" id="eventos">
+    <h2>Em destaque</h2>
+    <div class="grade"></div>
+    <p class="vazio" hidden>Nenhum evento nesta categoria por enquanto.</p>
+  </section>
+
+  <section class="cta-final">
+    <div class="cta-grade">
+      <div class="cta-bloco">
+        <h2>Produz eventos?</h2>
+        <p>Venda seus ingressos com a Flow e distribua entretenimento em escala.</p>
+        <a class="btn btn-primario" href="#">Quero vender com a Flow</a>
+      </div>
+      <div class="cta-bloco">
+        <h2>Quer ser promoter?</h2>
+        <p>Divulgue as festas, traga a sua galera e ganhe por indicação com a Flow.</p>
+        <a class="btn btn-primario" target="_blank" rel="noopener" href="https://wa.me/5511996400247?text=%F0%9F%9A%80%20Ol%C3%A1!%20Quero%20ser%20promoter%20da%20Flow%20Tickets.">Quero ser promoter</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sobre" id="sobre">
+    <div class="miolo">
+      <div class="rotulo">Sobre nós</div>
+      <h2 class="manifesto">Mais do que ingressos, criamos <em>conexão</em>. Mais do que festas, entregamos momentos que ficam.</h2>
+      <p class="texto">Unimos tecnologia, estética e entretenimento para levar pessoas aos melhores eventos, com uma identidade moderna, forte e inesquecível. Acreditamos na energia da música, na força das experiências e no poder de viver algo que fica para sempre. Somos a máquina de distribuição para entretenimento.</p>
+
+      <div class="diferenciais">
+        <div class="dif">
+          <div class="icone">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+          </div>
+          <h3>Atendimento humano, direto no WhatsApp</h3>
+          <p>Nada de robô ou fila de e-mail: da compra ao dia do evento, você fala com gente de verdade e resolve na hora.</p>
+        </div>
+        <div class="dif">
+          <div class="icone">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+          </div>
+          <h3>Curadoria de verdade</h3>
+          <p>Não somos um catálogo infinito: selecionamos as festas e experiências que realmente valem a sua noite.</p>
+        </div>
+        <div class="dif">
+          <div class="icone">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <h3>Compra segura, sem golpe</h3>
+          <p>Cada ingresso é verificado antes de chegar até você. Transparência até no que está esgotado.</p>
+        </div>
+        <div class="dif">
+          <div class="icone">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>
+          </div>
+          <h3>Confirmou, chegou</h3>
+          <p>Seu ingresso cai no e-mail em minutos após a confirmação. Sem espera, sem ansiedade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-fundo" id="modal-detalhe" role="dialog" aria-modal="true"></div>
+
+  <footer>
+    <div>© 2026 Flow Tickets · Todos os direitos reservados</div>
+    <div class="redes">
+      <a target="_blank" href="https://instagram.com/flowticketss">Instagram</a>
+      <a target="_blank" href="https://wa.me/5511996400247">WhatsApp</a>
+    </div>
+  </footer>
+
+  <script src="eventos.js?v=20260805c"></script>
+  <script>
+    (function () {
+      var grade  = document.querySelector('.eventos .grade');
+      var titulo = document.querySelector('.eventos h2');
+      var vazio  = document.querySelector('.eventos .vazio');
+      var botoes = document.querySelectorAll('.filtros button');
+
+      var rotulos = {
+        'essa-semana':    'Essa semana',
+        'semana-que-vem': 'Semana que vem',
+        'reveillon':      'Réveillon',
+        'carnaval':       'Carnaval',
+        'todos':          'Todos os eventos'
+      };
+
+      function linhaFicha(rotulo, valor) {
+        var linha = document.createElement('div');
+        var b = document.createElement('b');
+        b.textContent = rotulo + ': ';
+        linha.appendChild(b);
+        linha.appendChild(document.createTextNode(valor));
+        return linha;
+      }
+
+      function montarCard(ev) {
+        var card = document.createElement('article');
+        card.className = 'card';
+        card.dataset.cat = ev.categoria || '';
+
+        var selo = ev.esgotado ? 'SOLD OUT' : (ev.selo || 'Ingressos abertos');
+        var capa = document.createElement('div');
+        capa.className = 'capa';
+        var spanSelo = document.createElement('span');
+        spanSelo.className = 'selo' + (ev.esgotado ? ' esgotado' : '');
+        spanSelo.textContent = selo;
+        capa.appendChild(spanSelo);
+        if (ev.imagem) {
+          var img = document.createElement('img');
+          img.src = ev.imagem;
+          img.alt = ev.nome;
+          capa.appendChild(img);
+        }
+        card.appendChild(capa);
+
+        var info = document.createElement('div');
+        info.className = 'info';
+
+        var data = document.createElement('div');
+        data.className = 'data';
+        data.textContent = ev.data;
+        info.appendChild(data);
+
+        var h3 = document.createElement('h3');
+        h3.textContent = ev.nome;
+        info.appendChild(h3);
+
+        var local = document.createElement('div');
+        local.className = 'local';
+        local.textContent = ev.local ? ev.local + ' · ' + ev.cidade : ev.cidade;
+        info.appendChild(local);
+
+        if (ev.preco || ev.lote) {
+          var precoLinha = document.createElement('div');
+          precoLinha.className = 'preco-linha';
+          if (ev.preco) {
+            var preco = document.createElement('span');
+            preco.className = 'preco';
+            preco.textContent = ev.preco;
+            precoLinha.appendChild(preco);
+          }
+          if (ev.lote && !ev.esgotado) {
+            var lote = document.createElement('span');
+            lote.className = 'lote';
+            lote.textContent = ev.lote;
+            precoLinha.appendChild(lote);
+          }
+          info.appendChild(precoLinha);
+        }
+
+        if (ev.tipos) {
+          var tipos = document.createElement('div');
+          tipos.className = 'tipos';
+          tipos.textContent = 'Ingressos: ' + ev.tipos;
+          info.appendChild(tipos);
+        }
+
+        if (ev.descricao || ev.lineup || ev.idade || ev.regras) {
+          var det = document.createElement('details');
+          var sum = document.createElement('summary');
+          sum.textContent = 'Sobre o evento';
+          det.appendChild(sum);
+
+          if (ev.descricao) {
+            var p = document.createElement('p');
+            p.textContent = ev.descricao;
+            det.appendChild(p);
+          }
+
+          var ficha = document.createElement('div');
+          ficha.className = 'ficha';
+          if (ev.lineup) ficha.appendChild(linhaFicha('Line-up', ev.lineup));
+          if (ev.idade)  ficha.appendChild(linhaFicha('Classificação', ev.idade));
+          if (ev.regras) ficha.appendChild(linhaFicha('Regras', ev.regras));
+          if (ficha.childNodes.length) det.appendChild(ficha);
+
+          info.appendChild(det);
+        }
+
+        var link = document.createElement('a');
+        link.className = 'comprar';
+        link.href = 'javascript:void(0)';
+        link.textContent = ev.esgotado ? 'Avise-me' : 'Ver detalhes e comprar';
+        info.appendChild(link);
+
+        card.appendChild(info);
+
+        // Clicar em qualquer parte do card abre a tela de detalhe.
+        card.addEventListener('click', function (e) {
+          // deixa o toggle "Sobre o evento" funcionar sem abrir o modal
+          if (e.target.closest('summary')) return;
+          abrirDetalhe(ev);
+        });
+
+        return card;
+      }
+
+      // ===== Tela de detalhe do evento =====
+      var modal = document.getElementById('modal-detalhe');
+
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      function fecharDetalhe() {
+        modal.classList.remove('on');
+        modal.innerHTML = '';
+        document.body.style.overflow = '';
+      }
+
+      function abrirDetalhe(ev) {
+        var lotes = flowLotes(ev);
+        var vigente = lotes.filter(function (l) { return l.status === 'vigente'; })[0];
+        var proximo = lotes.filter(function (l) { return l.status === 'em-breve'; })[0];
+
+        var linhasLote = lotes.map(function (l) {
+          var tag = l.status === 'vigente' ? 'Lote atual'
+                  : l.status === 'encerrado' ? 'Encerrado' : 'Em breve';
+          return '<div class="lote-linha ' + l.status + '">' +
+                   '<span class="lote-nome">' + esc(l.nome) + '</span>' +
+                   '<span class="lote-tag">' + tag + '</span>' +
+                 '</div>';
+        }).join('');
+
+        // Bloco de preço + botões
+        var compraHtml;
+        if (ev.esgotado) {
+          compraHtml =
+            '<a class="btn-comprar-grande flow" target="_blank" rel="noopener" href="' + esc(flowLinkWhats(ev)) + '" data-comprar="1">' +
+              '<span class="rotulo">Quero ser avisado</span>' +
+            '</a>' +
+            '<div class="modal-obs">Evento esgotado — avisamos você se abrir novo lote.</div>';
+        } else {
+          compraHtml =
+            '<a class="btn-comprar-grande flow" target="_blank" rel="noopener" href="' +
+              esc(flowLinkWhats(ev, 'Quero comprar com o desconto Flow (10% OFF).')) + '" data-comprar="1">' +
+              '<span class="rotulo">Comprar com desconto Flow <span class="off">10% OFF</span></span>' +
+            '</a>' +
+
+            '<a class="btn-comprar-grande pix" target="_blank" rel="noopener" href="' +
+              esc(flowLinkWhats(ev, 'Quero comprar no Pix, sem taxa.')) + '" data-comprar="1">' +
+              '<span class="rotulo">Comprar no Pix <span class="tag-pix">sem taxa</span></span>' +
+            '</a>' +
+
+            '<div class="modal-obs">Você fecha a compra direto com a nossa equipe no WhatsApp.</div>';
+        }
+
+        // Chips (tipos / classificação)
+        var chips = '';
+        if (ev.tipos) {
+          ev.tipos.split('·').forEach(function (t) {
+            t = t.trim();
+            if (t) chips += '<span class="modal-chip">' + esc(t) + '</span>';
+          });
+        }
+        if (ev.idade) chips += '<span class="modal-chip">' + esc(ev.idade) + '</span>';
+
+        // Ficha (line-up / regras)
+        var ficha = '';
+        if (ev.lineup) ficha += '<div><b>Line-up:</b> ' + esc(ev.lineup) + '</div>';
+        if (ev.regras) ficha += '<div><b>Regras:</b> ' + esc(ev.regras) + '</div>';
+
+        var selo = ev.esgotado ? 'SOLD OUT' : (ev.selo || 'Ingressos abertos');
+        var localTxt = ev.local ? ev.local + ' · ' + ev.cidade : ev.cidade;
+
+        modal.innerHTML =
+          '<div class="modal">' +
+            '<button class="modal-fechar" aria-label="Fechar" data-fechar="1">×</button>' +
+            '<div class="modal-capa">' +
+              (ev.imagem ? '<img src="' + esc(ev.imagem) + '" alt="' + esc(ev.nome) + '">' : '') +
+              '<span class="modal-selo' + (ev.esgotado ? ' esgotado' : '') + '">' + esc(selo) + '</span>' +
+            '</div>' +
+            '<div class="modal-corpo">' +
+              (ev.data ? '<div class="modal-data">' + esc(ev.data) + '</div>' : '') +
+              '<h2>' + esc(ev.nome) + '</h2>' +
+              '<div class="modal-local">' + esc(localTxt) + '</div>' +
+              (chips ? '<div class="modal-chips">' + chips + '</div>' : '') +
+              (ev.descricao ? '<div class="modal-secao"><h4>Sobre o evento</h4><p>' + esc(ev.descricao) + '</p></div>' : '') +
+              (lotes.length ? '<div class="modal-secao"><h4>Lotes</h4>' + linhasLote + '</div>' : '') +
+              (ficha ? '<div class="modal-secao"><h4>Informações</h4><div class="modal-ficha">' + ficha + '</div></div>' : '') +
+            '</div>' +
+            '<div class="modal-compra">' + compraHtml + '</div>' +
+          '</div>';
+
+        // Fechar: botão × e clique no fundo escuro
+        modal.querySelector('[data-fechar]').addEventListener('click', fecharDetalhe);
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) fecharDetalhe();
+        });
+        // Registra o clique em qualquer botão de compra (mesmo rastreio de antes)
+        modal.querySelectorAll('[data-comprar]').forEach(function (btn) {
+          btn.addEventListener('click', function () { flowRegistrarClique(ev.id); });
+        });
+
+        modal.classList.add('on');
+        modal.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Fecha com a tecla ESC
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('on')) fecharDetalhe();
+      });
+
+      // Aviso de indicação: se a pessoa chegou por ?p=nome, mostra a faixa
+      var promoter = flowPromoterAtual();
+      if (promoter) {
+        document.getElementById('nome-promoter').textContent =
+          promoter.charAt(0).toUpperCase() + promoter.slice(1);
+        document.getElementById('aviso-promoter').classList.add('on');
+      }
+
+      // Monta a vitrine a partir do cadastro (padrão ou editado no admin)
+      var eventos = flowCarregarEventos();
+      eventos.forEach(function (ev) { grade.appendChild(montarCard(ev)); });
+
+      var cards = grade.querySelectorAll('.card');
+
+      function filtrar(cat) {
+        var visiveis = 0;
+        cards.forEach(function (card) {
+          var mostra = cat === 'todos' ||
+            (card.dataset.cat || '').split(' ').indexOf(cat) !== -1;
+          card.style.display = mostra ? '' : 'none';
+          if (mostra) visiveis++;
+        });
+        titulo.textContent = rotulos[cat] || 'Eventos';
+        vazio.hidden = visiveis > 0;
+      }
+
+      botoes.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          botoes.forEach(function (b) { b.classList.remove('ativo'); });
+          btn.classList.add('ativo');
+          filtrar(btn.dataset.cat);
+        });
+      });
+
+      // estado inicial = botão já marcado como ativo
+      var ativo = document.querySelector('.filtros button.ativo');
+      if (ativo) filtrar(ativo.dataset.cat);
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Tickets — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --roxo-escuro: #0c0a10;
+      --roxo: #2a1550;
+      --roxo-vivo: #7a2ff7;
+      --magenta: #ff2668;
+      --laranja: #ff7a1a;
+      --branco: #ffffff;
+      --cinza-claro: #d9d4e6;
+      --verde: #22c55e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Archivo', -apple-system, sans-serif;
+      background: var(--roxo-escuro);
+      color: var(--branco);
+      padding-bottom: 80px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(12, 10, 16, 0.95);
+    }
+    .logo { font-weight: 900; font-size: 24px; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+    .logo img { height: 24px; width: auto; display: block; }
+    .logo small {
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--laranja);
+      margin-left: 10px;
+      text-transform: uppercase;
+    }
+    header a.ver-site {
+      color: var(--magenta);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 40px 0 16px;
+    }
+    h2:first-child { margin-top: 0; }
+
+    /* Resumo */
+    .resumo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .stat {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .stat .numero { font-size: 34px; font-weight: 900; }
+    .stat .numero.destaque {
+      background: linear-gradient(90deg, var(--magenta), var(--laranja));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat .rotulo { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+
+    /* Formulário */
+    form.evento {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .campo { display: flex; flex-direction: column; gap: 6px; }
+    .campo.largo { grid-column: 1 / -1; }
+    .campo label { font-size: 13px; font-weight: 700; color: var(--cinza-claro); }
+    .campo label small { font-weight: 400; color: rgba(255,255,255,0.45); }
+    .campo input[type="text"],
+    .campo select,
+    .campo textarea {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--branco);
+      font-family: inherit;
+      font-size: 15px;
+    }
+    .campo textarea { resize: vertical; min-height: 70px; }
+    .campo input:focus, .campo select:focus, .campo textarea:focus {
+      outline: none;
+      border-color: var(--magenta);
+    }
+    .campo select option { background: var(--roxo-escuro); }
+    .checkbox {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      padding-top: 24px;
+    }
+    .checkbox input { width: 18px; height: 18px; accent-color: var(--magenta); }
+    .checkbox label { font-size: 15px; }
+
+    .acoes-form { grid-column: 1 / -1; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 30px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--branco);
+    }
+    .btn-primario { background: linear-gradient(90deg, var(--magenta), var(--laranja)); }
+    .btn-primario:hover { filter: brightness(1.15); }
+    .btn-fantasma {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .btn-fantasma:hover { border-color: var(--magenta); }
+    .btn-perigo { background: rgba(220, 38, 38, 0.85); }
+    .btn-perigo:hover { filter: brightness(1.15); }
+
+    /* Lista de eventos */
+    .lista { display: flex; flex-direction: column; gap: 12px; }
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 12px 16px;
+      flex-wrap: wrap;
+    }
+    .item .thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: linear-gradient(135deg, var(--roxo-vivo), var(--magenta));
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 20px;
+    }
+    .item .dados { flex: 1; min-width: 200px; }
+    .item .nome { font-weight: 800; font-size: 16px; }
+    .item .meta { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+    .item .etiqueta {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--verde);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      white-space: nowrap;
+    }
+    .item .etiqueta.esgotado {
+      background: rgba(220, 38, 38, 0.15);
+      color: #f87171;
+      border-color: rgba(220, 38, 38, 0.4);
+    }
+    .item .cliques { font-size: 13px; color: var(--magenta); font-weight: 700; white-space: nowrap; }
+    .item .botoes { display: flex; gap: 8px; }
+    .item .botoes button {
+      font-size: 12px;
+      padding: 9px 18px;
+    }
+
+    /* Configuração e manutenção */
+    .config {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .config .campo { flex: 1; min-width: 240px; }
+    .manutencao { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* Vários números de WhatsApp */
+    .numeros { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; width: 100%; }
+    .numero-linha { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .numero-linha input[type="text"] {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--branco);
+      font-family: inherit;
+      font-size: 15px;
+    }
+    .numero-linha input:focus { outline: none; border-color: var(--magenta); }
+    .numero-linha .n-label { flex: 1; min-width: 140px; }
+    .numero-linha .n-num { flex: 1.2; min-width: 170px; }
+    .numero-linha .n-padrao { display: flex; align-items: center; gap: 6px; font-size: 14px; white-space: nowrap; }
+    .numero-linha .n-padrao input { width: 16px; height: 16px; accent-color: var(--magenta); }
+    .numero-linha .n-remover { padding: 9px 16px; font-size: 12px; }
+
+    .aviso {
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.6;
+    }
+
+    /* Importar de um link */
+    .importar {
+      background: linear-gradient(135deg, rgba(255, 38, 104, 0.12), rgba(255, 122, 26, 0.08));
+      border: 1px solid rgba(255, 38, 104, 0.35);
+      border-radius: 20px;
+      padding: 22px 24px;
+      margin-bottom: 20px;
+    }
+    .importar .imp-label { font-size: 16px; font-weight: 800; display: block; margin-bottom: 4px; }
+    .importar .imp-sub { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 14px; line-height: 1.5; }
+    .importar-linha { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
+    .importar-linha input {
+      flex: 1;
+      min-width: 240px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--branco);
+      font-family: inherit;
+      font-size: 15px;
+    }
+    .importar-linha input:focus { outline: none; border-color: var(--magenta); }
+    .importar-linha .btn { white-space: nowrap; }
+    .importar-linha .btn:disabled { opacity: 0.6; cursor: default; }
+    #importar-status { margin-top: 12px; margin-bottom: 0; }
+    #importar-status.erro { color: #f87171; }
+    #importar-status.ok { color: #4ade80; }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--magenta), var(--laranja));
+      color: var(--branco);
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 50;
+    }
+    .toast.mostrar { opacity: 1; }
+
+    @media (max-width: 700px) {
+      form.evento { grid-template-columns: 1fr; }
+      .checkbox { padding-top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><img src="FLOW-LOGOSIMPLES-PNG.png" alt="Flow">FLOW<small>Admin</small></div>
+    <a class="ver-site" href="index.html">Ver o site →</a>
+  </header>
+
+  <main>
+    <h2>Resumo</h2>
+    <div class="resumo">
+      <div class="stat"><div class="numero" id="stat-total">–</div><div class="rotulo">Eventos no site</div></div>
+      <div class="stat"><div class="numero" id="stat-venda">–</div><div class="rotulo">À venda</div></div>
+      <div class="stat"><div class="numero" id="stat-esgotados">–</div><div class="rotulo">Esgotados</div></div>
+      <div class="stat"><div class="numero destaque" id="stat-cliques">–</div><div class="rotulo">Cliques em "Comprar" (neste navegador)</div></div>
+    </div>
+
+    <h2 id="titulo-form">Adicionar evento</h2>
+
+    <div class="importar">
+      <span class="imp-label">⚡ Importar de um link</span>
+      <div class="imp-sub">Cole o link do evento em outro site (ex.: Blacktag) e a gente preenche o formulário sozinho. Nome, data, local, cidade e imagem costumam vir; preço e lote você confere depois.</div>
+      <div class="importar-linha">
+        <input type="text" id="f-importar-url" placeholder="https://blacktag.com.br/eventos/32646/bailao-boi-na-zona">
+        <button type="button" class="btn btn-primario" id="btn-importar-url">Extrair informações</button>
+      </div>
+      <p class="aviso" id="importar-status"></p>
+    </div>
+
+    <form class="evento" id="form-evento">
+      <div class="campo">
+        <label for="f-nome">Nome do evento *</label>
+        <input type="text" id="f-nome" required placeholder="Ex.: Festa Astral">
+      </div>
+      <div class="campo">
+        <label for="f-data">Data e hora (texto livre) *</label>
+        <input type="text" id="f-data" required placeholder="Ex.: Sáb · 25 Jul · 22h às 6h">
+      </div>
+      <div class="campo">
+        <label for="f-local">Local <small>(opcional)</small></label>
+        <input type="text" id="f-local" placeholder="Ex.: Hangar Campo de Marte">
+      </div>
+      <div class="campo">
+        <label for="f-cidade">Cidade</label>
+        <input type="text" id="f-cidade" value="São Paulo · SP">
+      </div>
+      <div class="campo">
+        <label for="f-categoria">Categoria (filtro do site)</label>
+        <select id="f-categoria">
+          <option value="essa-semana">Essa Semana</option>
+          <option value="semana-que-vem">Semana Que Vem</option>
+          <option value="proximas" selected>Próximas festas</option>
+          <option value="reveillon">Réveillon</option>
+          <option value="carnaval">Carnaval</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="f-tipos">Tipos de ingresso <small>(separe com ·)</small></label>
+        <input type="text" id="f-tipos" placeholder="Ex.: Pista · Open Bar">
+      </div>
+      <div class="campo">
+        <label for="f-preco">Preço <small>(como aparece no site)</small></label>
+        <input type="text" id="f-preco" placeholder="Ex.: A partir de R$ 60">
+      </div>
+      <div class="campo">
+        <label for="f-lote">Lote ativo <small>(opcional)</small></label>
+        <input type="text" id="f-lote" placeholder="Ex.: 2º lote">
+      </div>
+      <div class="campo">
+        <label for="f-idade">Classificação etária <small>(opcional)</small></label>
+        <input type="text" id="f-idade" placeholder="Ex.: 18 anos">
+      </div>
+      <div class="campo">
+        <label for="f-selo">Selo do card <small>(ex.: Últimos ingressos)</small></label>
+        <input type="text" id="f-selo" placeholder="Ex.: Ingressos abertos">
+      </div>
+      <div class="campo">
+        <label for="f-whats-evento">WhatsApp deste evento <small>(quem recebe os pedidos)</small></label>
+        <select id="f-whats-evento"></select>
+      </div>
+      <div class="campo checkbox">
+        <input type="checkbox" id="f-esgotado">
+        <label for="f-esgotado">Evento esgotado (botão vira "Avise-me")</label>
+      </div>
+      <div class="campo largo">
+        <label for="f-imagem">Endereço da imagem <small>(link que termina em .jpg/.png — opcional)</small></label>
+        <input type="text" id="f-imagem" placeholder="https://...">
+      </div>
+      <div class="campo largo">
+        <label for="f-lineup">Line-up / atrações <small>(opcional)</small></label>
+        <input type="text" id="f-lineup" placeholder="Ex.: DJ Fulano, Banda Ciclano, MC Beltrano">
+      </div>
+      <div class="campo largo">
+        <label for="f-regras">Regras <small>(ex.: documento com foto, open bar até tal hora — opcional)</small></label>
+        <textarea id="f-regras"></textarea>
+      </div>
+      <div class="campo largo">
+        <label for="f-descricao">Descrição <small>(aparece no "Sobre o evento" — opcional)</small></label>
+        <textarea id="f-descricao"></textarea>
+      </div>
+      <div class="campo largo">
+        <label for="f-msg">Mensagem do WhatsApp <small>(se deixar vazio, é gerada sozinha)</small></label>
+        <textarea id="f-msg" placeholder="Olá! Quero comprar ingresso para..."></textarea>
+      </div>
+      <input type="hidden" id="f-origem">
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario" id="btn-salvar">Adicionar evento</button>
+        <button type="button" class="btn btn-fantasma" id="btn-cancelar" hidden>Cancelar edição</button>
+      </div>
+    </form>
+
+    <h2>Eventos no site</h2>
+    <div class="lista" id="lista"></div>
+
+    <h2>Acompanhar lotes na origem</h2>
+    <div class="config" style="flex-direction: column; align-items: stretch;">
+      <div class="manutencao">
+        <button class="btn btn-primario" id="btn-conferir-lotes">Conferir lotes agora</button>
+      </div>
+      <p class="aviso" id="conferencia-status"></p>
+      <div class="numeros" id="resultado-conferencia"></div>
+      <p class="aviso">
+        Reabre o link de origem de cada evento <b>importado</b> e compara o lote/preço atual com o que está salvo no site —
+        se mudou, você atualiza com um clique. Como o site ainda é estático, isso roda <b>quando você clica aqui</b>
+        (não fica checando sozinho o dia todo; para alerta automático 24h é preciso backend — me peça quando chegar a hora).
+      </p>
+    </div>
+
+    <h2>WhatsApps que recebem os pedidos</h2>
+    <div class="config" style="flex-direction: column; align-items: stretch;">
+      <div class="numeros" id="lista-numeros"></div>
+      <div class="manutencao">
+        <button class="btn btn-fantasma" id="btn-add-numero">+ Adicionar número</button>
+        <button class="btn btn-primario" id="btn-salvar-numeros">Salvar WhatsApps</button>
+      </div>
+      <p class="aviso">
+        Cadastre quantos números quiser (só dígitos, com DDI — ex.: <b>5511996400247</b>).
+        O número marcado como <b>Padrão</b> recebe os eventos em que você não escolher um número específico.
+        Em cada evento, use o campo <b>"WhatsApp deste evento"</b> para direcionar os pedidos daquele evento.
+      </p>
+    </div>
+
+    <h2>Promoters</h2>
+    <div class="config">
+      <div class="campo">
+        <label for="f-promoter">Nome do promoter <small>(sem espaços — ex.: joao, marina)</small></label>
+        <input type="text" id="f-promoter" placeholder="Ex.: joao">
+      </div>
+      <button class="btn btn-primario" id="btn-gerar-link">Gerar link</button>
+    </div>
+    <div class="campo largo" id="box-link-promoter" style="margin-top:12px; display:none;">
+      <label>Link para o promoter divulgar <small>(cada clique vindo dele é contado)</small></label>
+      <input type="text" id="link-promoter" readonly onclick="this.select()">
+    </div>
+    <p class="aviso">
+      Entregue esse link para o promoter colar nos stories/status. Quem entrar por ele já chega
+      identificado no WhatsApp e conta como clique dele na tabela abaixo.
+    </p>
+
+    <h2>Cliques por promoter</h2>
+    <div class="lista" id="lista-promoters"></div>
+
+    <h2>Manutenção</h2>
+    <div class="manutencao">
+      <button class="btn btn-fantasma" id="btn-backup">Baixar backup dos eventos</button>
+      <button class="btn btn-fantasma" id="btn-importar">Restaurar de um backup</button>
+      <input type="file" id="arquivo-backup" accept=".json" hidden>
+      <button class="btn btn-perigo" id="btn-restaurar">Voltar aos eventos originais</button>
+    </div>
+    <p class="aviso">
+      As alterações ficam salvas <strong>neste navegador, neste computador</strong> — o site (index.html) lê daqui.
+      Antes de mexer muito, clique em "Baixar backup" para guardar uma cópia dos eventos.
+      Quando o site for publicado na internet de verdade, este painel precisará de um banco de dados (me peça quando chegar a hora).
+    </p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="eventos.js?v=20260805d"></script>
+  <script>
+    (function () {
+      var eventos = flowCarregarEventos();
+      var editandoId = null;
+
+      var form = document.getElementById('form-evento');
+      var lista = document.getElementById('lista');
+      var toast = document.getElementById('toast');
+
+      function $(id) { return document.getElementById(id); }
+
+      function avisar(msg) {
+        toast.textContent = msg;
+        toast.classList.add('mostrar');
+        setTimeout(function () { toast.classList.remove('mostrar'); }, 2500);
+      }
+
+      function salvar() {
+        flowSalvarEventos(eventos);
+        desenharTudo();
+      }
+
+      function desenharResumo() {
+        var esgotados = eventos.filter(function (e) { return e.esgotado; }).length;
+        var cliques = flowCarregarCliques();
+        var totalCliques = 0;
+        Object.keys(cliques).forEach(function (k) { totalCliques += cliques[k]; });
+        $('stat-total').textContent = eventos.length;
+        $('stat-venda').textContent = eventos.length - esgotados;
+        $('stat-esgotados').textContent = esgotados;
+        $('stat-cliques').textContent = totalCliques;
+      }
+
+      function desenharLista() {
+        lista.innerHTML = '';
+        var cliques = flowCarregarCliques();
+
+        if (!eventos.length) {
+          lista.innerHTML = '<p class="aviso">Nenhum evento cadastrado. Adicione o primeiro no formulário acima.</p>';
+          return;
+        }
+
+        eventos.forEach(function (ev) {
+          var item = document.createElement('div');
+          item.className = 'item';
+
+          var thumb;
+          if (ev.imagem) {
+            thumb = document.createElement('img');
+            thumb.className = 'thumb';
+            thumb.src = ev.imagem;
+            thumb.alt = ev.nome;
+          } else {
+            thumb = document.createElement('div');
+            thumb.className = 'thumb';
+            thumb.textContent = (ev.nome || '?').charAt(0).toUpperCase();
+          }
+          item.appendChild(thumb);
+
+          var dados = document.createElement('div');
+          dados.className = 'dados';
+          var nome = document.createElement('div');
+          nome.className = 'nome';
+          nome.textContent = ev.nome;
+          var meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = ev.data + '  ·  ' + (FLOW_CATEGORIAS[ev.categoria] || ev.categoria);
+          dados.appendChild(nome);
+          dados.appendChild(meta);
+          item.appendChild(dados);
+
+          var etiqueta = document.createElement('span');
+          etiqueta.className = 'etiqueta' + (ev.esgotado ? ' esgotado' : '');
+          etiqueta.textContent = ev.esgotado ? 'Esgotado' : (ev.selo || 'À venda');
+          item.appendChild(etiqueta);
+
+          var cli = document.createElement('span');
+          cli.className = 'cliques';
+          cli.textContent = (cliques[ev.id] || 0) + ' cliques';
+          item.appendChild(cli);
+
+          var botoes = document.createElement('div');
+          botoes.className = 'botoes';
+
+          var btnEditar = document.createElement('button');
+          btnEditar.className = 'btn btn-fantasma';
+          btnEditar.textContent = 'Editar';
+          btnEditar.addEventListener('click', function () { comecarEdicao(ev.id); });
+
+          var btnRemover = document.createElement('button');
+          btnRemover.className = 'btn btn-perigo';
+          btnRemover.textContent = 'Remover';
+          btnRemover.addEventListener('click', function () {
+            if (confirm('Remover "' + ev.nome + '" do site?')) {
+              eventos = eventos.filter(function (e) { return e.id !== ev.id; });
+              if (editandoId === ev.id) cancelarEdicao();
+              salvar();
+              avisar('Evento removido do site.');
+            }
+          });
+
+          botoes.appendChild(btnEditar);
+          botoes.appendChild(btnRemover);
+          item.appendChild(botoes);
+
+          lista.appendChild(item);
+        });
+      }
+
+      function nomeEvento(id) {
+        var ev = eventos.find(function (e) { return e.id === id; });
+        return ev ? ev.nome : id;
+      }
+
+      function desenharPromoters() {
+        var box = document.getElementById('lista-promoters');
+        box.innerHTML = '';
+        var cp = flowCarregarCliquesPromoter();
+        var nomes = Object.keys(cp);
+        if (!nomes.length) {
+          box.innerHTML = '<p class="aviso">Nenhum clique por promoter ainda. Gere um link acima e compartilhe para começar a medir.</p>';
+          return;
+        }
+        // ordena por total de cliques (maior primeiro)
+        nomes.sort(function (a, b) { return totalPromoter(cp[b]) - totalPromoter(cp[a]); });
+        nomes.forEach(function (nome) {
+          var total = totalPromoter(cp[nome]);
+          var detalhe = Object.keys(cp[nome]).map(function (id) {
+            return nomeEvento(id) + ' (' + cp[nome][id] + ')';
+          }).join(' · ');
+
+          var item = document.createElement('div');
+          item.className = 'item';
+          var dados = document.createElement('div');
+          dados.className = 'dados';
+          var n = document.createElement('div');
+          n.className = 'nome';
+          n.textContent = nome.charAt(0).toUpperCase() + nome.slice(1);
+          var m = document.createElement('div');
+          m.className = 'meta';
+          m.textContent = detalhe;
+          dados.appendChild(n);
+          dados.appendChild(m);
+          item.appendChild(dados);
+
+          var cli = document.createElement('span');
+          cli.className = 'cliques';
+          cli.textContent = total + ' cliques';
+          item.appendChild(cli);
+
+          box.appendChild(item);
+        });
+      }
+
+      function totalPromoter(obj) {
+        var t = 0;
+        Object.keys(obj).forEach(function (k) { t += obj[k]; });
+        return t;
+      }
+
+      function desenharTudo() {
+        desenharResumo();
+        desenharLista();
+        desenharPromoters();
+      }
+
+      function lerFormulario() {
+        return {
+          nome: $('f-nome').value.trim(),
+          data: $('f-data').value.trim(),
+          local: $('f-local').value.trim(),
+          cidade: $('f-cidade').value.trim() || 'São Paulo · SP',
+          categoria: $('f-categoria').value,
+          tipos: $('f-tipos').value.trim(),
+          preco: $('f-preco').value.trim(),
+          lote: $('f-lote').value.trim(),
+          idade: $('f-idade').value.trim(),
+          selo: $('f-selo').value.trim(),
+          esgotado: $('f-esgotado').checked,
+          imagem: $('f-imagem').value.trim(),
+          lineup: $('f-lineup').value.trim(),
+          regras: $('f-regras').value.trim(),
+          descricao: $('f-descricao').value.trim(),
+          whatsId: $('f-whats-evento').value,
+          origem: $('f-origem').value.trim(),
+          msg: $('f-msg').value.trim()
+        };
+      }
+
+      function preencherFormulario(ev) {
+        $('f-nome').value = ev.nome || '';
+        $('f-data').value = ev.data || '';
+        $('f-local').value = ev.local || '';
+        $('f-cidade').value = ev.cidade || 'São Paulo · SP';
+        $('f-categoria').value = ev.categoria || 'proximas';
+        $('f-tipos').value = ev.tipos || '';
+        $('f-preco').value = ev.preco || '';
+        $('f-lote').value = ev.lote || '';
+        $('f-idade').value = ev.idade || '';
+        $('f-selo').value = ev.selo || '';
+        $('f-esgotado').checked = !!ev.esgotado;
+        $('f-imagem').value = ev.imagem || '';
+        $('f-lineup').value = ev.lineup || '';
+        $('f-regras').value = ev.regras || '';
+        $('f-descricao').value = ev.descricao || '';
+        $('f-whats-evento').value = ev.whatsId || '';
+        $('f-origem').value = ev.origem || '';
+        $('f-msg').value = ev.msg || '';
+      }
+
+      function comecarEdicao(id) {
+        var ev = eventos.find(function (e) { return e.id === id; });
+        if (!ev) return;
+        editandoId = id;
+        preencherFormulario(ev);
+        document.getElementById('titulo-form').textContent = 'Editando: ' + ev.nome;
+        $('btn-salvar').textContent = 'Salvar alterações';
+        $('btn-cancelar').hidden = false;
+        window.scrollTo({ top: form.offsetTop - 90, behavior: 'smooth' });
+      }
+
+      function cancelarEdicao() {
+        editandoId = null;
+        form.reset();
+        $('f-cidade').value = 'São Paulo · SP';
+        document.getElementById('titulo-form').textContent = 'Adicionar evento';
+        $('btn-salvar').textContent = 'Adicionar evento';
+        $('btn-cancelar').hidden = true;
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var dados = lerFormulario();
+        if (!dados.nome || !dados.data) {
+          avisar('Preencha ao menos o nome e a data.');
+          return;
+        }
+
+        if (editandoId) {
+          var i = eventos.findIndex(function (ev) { return ev.id === editandoId; });
+          if (i !== -1) {
+            dados.id = editandoId;
+            eventos[i] = dados;
+          }
+          avisar('Evento atualizado no site.');
+        } else {
+          dados.id = 'ev-' + Date.now();
+          eventos.push(dados);
+          avisar('Evento adicionado ao site.');
+        }
+        cancelarEdicao();
+        salvar();
+      });
+
+      $('btn-cancelar').addEventListener('click', cancelarEdicao);
+
+      // ===== Vários WhatsApps que recebem os pedidos =====
+      function novoIdNumero() { return 'n-' + Date.now() + '-' + Math.floor(Math.random() * 1000); }
+
+      function linhaNumero(n, ehPadrao) {
+        var div = document.createElement('div');
+        div.className = 'numero-linha';
+        div.dataset.id = n.id;
+
+        var label = document.createElement('input');
+        label.type = 'text';
+        label.className = 'n-label';
+        label.placeholder = 'Apelido (ex.: Vendas SP)';
+        label.value = n.label || '';
+
+        var num = document.createElement('input');
+        num.type = 'text';
+        num.className = 'n-num';
+        num.placeholder = '5511996400247';
+        num.value = n.numero || '';
+
+        var padrao = document.createElement('label');
+        padrao.className = 'n-padrao';
+        var radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'numero-padrao';
+        radio.checked = !!ehPadrao;
+        padrao.appendChild(radio);
+        padrao.appendChild(document.createTextNode(' Padrão'));
+
+        var rem = document.createElement('button');
+        rem.type = 'button';
+        rem.className = 'btn btn-perigo n-remover';
+        rem.textContent = 'Remover';
+        rem.addEventListener('click', function () { div.remove(); });
+
+        div.appendChild(label);
+        div.appendChild(num);
+        div.appendChild(padrao);
+        div.appendChild(rem);
+        return div;
+      }
+
+      function desenharNumeros() {
+        var cfg = flowCarregarConfig();
+        var box = $('lista-numeros');
+        box.innerHTML = '';
+        cfg.numeros.forEach(function (n) {
+          box.appendChild(linhaNumero(n, n.numero === cfg.whats));
+        });
+      }
+
+      function preencherSelectNumeros() {
+        var cfg = flowCarregarConfig();
+        var sel = $('f-whats-evento');
+        var atual = sel.value;
+        sel.innerHTML = '';
+
+        var padraoLabel = '';
+        cfg.numeros.forEach(function (n) { if (!padraoLabel && n.numero === cfg.whats) padraoLabel = n.label; });
+
+        var opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Padrão' + (padraoLabel ? ' (' + padraoLabel + ')' : '');
+        sel.appendChild(opt);
+
+        cfg.numeros.forEach(function (n) {
+          var o = document.createElement('option');
+          o.value = n.id;
+          o.textContent = n.label + ' · ' + n.numero;
+          sel.appendChild(o);
+        });
+        sel.value = atual; // mantém a escolha se ainda existir
+      }
+
+      $('btn-add-numero').addEventListener('click', function () {
+        $('lista-numeros').appendChild(linhaNumero({ id: novoIdNumero(), label: '', numero: '' }, false));
+      });
+
+      $('btn-salvar-numeros').addEventListener('click', function () {
+        var linhas = $('lista-numeros').querySelectorAll('.numero-linha');
+        var numeros = [];
+        var padraoNum = '';
+        var incompleto = false;
+
+        linhas.forEach(function (l) {
+          var num = l.querySelector('.n-num').value.replace(/\D/g, '');
+          var label = l.querySelector('.n-label').value.trim();
+          var ehPadrao = l.querySelector('input[type="radio"]').checked;
+          if (!num) return;                 // ignora linha vazia
+          if (num.length < 12) { incompleto = true; return; }
+          numeros.push({ id: l.dataset.id, label: label || 'WhatsApp', numero: num });
+          if (ehPadrao) padraoNum = num;
+        });
+
+        if (incompleto) { avisar('Algum número está incompleto. Use DDI+DDD+número (ex.: 5511996400247).'); return; }
+        if (!numeros.length) { avisar('Cadastre ao menos um número.'); return; }
+        if (!padraoNum) padraoNum = numeros[0].numero; // se ninguém marcou, o 1º é padrão
+
+        flowSalvarConfig({ whats: padraoNum, numeros: numeros });
+        desenharNumeros();
+        preencherSelectNumeros();
+        avisar('WhatsApps salvos.');
+      });
+
+      // Backup
+      $('btn-backup').addEventListener('click', function () {
+        var blob = new Blob([JSON.stringify(eventos, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'flowtickets-eventos.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      $('btn-importar').addEventListener('click', function () {
+        $('arquivo-backup').click();
+      });
+      $('arquivo-backup').addEventListener('change', function () {
+        var arquivo = this.files[0];
+        if (!arquivo) return;
+        var leitor = new FileReader();
+        leitor.onload = function () {
+          try {
+            var dados = JSON.parse(leitor.result);
+            if (!Array.isArray(dados)) throw new Error('formato');
+            eventos = dados;
+            salvar();
+            avisar('Backup restaurado: ' + eventos.length + ' eventos.');
+          } catch (e) {
+            avisar('Não consegui ler esse arquivo. É o backup baixado aqui?');
+          }
+        };
+        leitor.readAsText(arquivo);
+        this.value = '';
+      });
+
+      $('btn-restaurar').addEventListener('click', function () {
+        if (confirm('Isso apaga suas alterações e volta aos eventos originais. Continuar?')) {
+          eventos = JSON.parse(JSON.stringify(EVENTOS_PADRAO));
+          salvar();
+          avisar('Eventos originais restaurados.');
+        }
+      });
+
+      // Gerador de link de promoter
+      $('btn-gerar-link').addEventListener('click', function () {
+        var nome = $('f-promoter').value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+        if (!nome) {
+          avisar('Digite o nome do promoter (sem espaços).');
+          return;
+        }
+        var url = new URL('index.html?p=' + encodeURIComponent(nome), window.location.href).href;
+        $('link-promoter').value = url;
+        document.getElementById('box-link-promoter').style.display = '';
+        $('link-promoter').focus();
+        $('link-promoter').select();
+        avisar('Link gerado! Clique nele para copiar.');
+      });
+
+      // ===== Importar evento de um link externo =====
+      // O site é estático, então o navegador não consegue ler outro domínio
+      // direto (CORS). Usamos um proxy de leitura público, tentando alguns em
+      // sequência até um responder. Quando o site tiver backend, isso vira uma
+      // chamada no servidor (sem proxy).
+      var PROXIES = [
+        function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+        function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); },
+        function (u) { return 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u); }
+      ];
+
+      function statusImport(msg, tipo) {
+        var el = $('importar-status');
+        el.textContent = msg;
+        el.className = 'aviso' + (tipo ? ' ' + tipo : '');
+      }
+
+      function buscarHtml(url) {
+        var i = 0;
+        function tentar() {
+          if (i >= PROXIES.length) return Promise.reject(new Error('proxies'));
+          var alvo = PROXIES[i++](url);
+          return fetch(alvo)
+            .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+            .then(function (t) { if (!t || t.length < 200) throw new Error('vazio'); return t; })
+            .catch(function () { return tentar(); });
+        }
+        return tentar();
+      }
+
+      var SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      var MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+      // "2026-08-08T18:00:00-03:00" -> "Sex · 08 Ago · 18h"
+      function formatarData(iso) {
+        var m = String(iso).match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+        if (!m) return '';
+        var y = +m[1], mo = +m[2], d = +m[3], h = +m[4], mi = +m[5];
+        var wd = new Date(Date.UTC(y, mo - 1, d)).getUTCDay();
+        var hora = mi > 0 ? (h + 'h' + (mi < 10 ? '0' : '') + mi) : (h + 'h');
+        return SEMANA[wd] + ' · ' + (d < 10 ? '0' : '') + d + ' ' + MESES[mo - 1] + ' · ' + hora;
+      }
+
+      // Escolhe o filtro do site a partir da data do evento.
+      function categoriaPorData(iso) {
+        var m = String(iso).match(/(\d{4})-(\d{2})-(\d{2})/);
+        if (!m) return null;
+        var alvo = Date.UTC(+m[1], +m[2] - 1, +m[3]);
+        var hoje = new Date();
+        var dias = Math.round((alvo - Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) / 86400000);
+        if (+m[2] === 12) return 'reveillon';
+        if (+m[2] === 2) return 'carnaval';
+        if (dias >= 0 && dias <= 7) return 'essa-semana';
+        if (dias > 7 && dias <= 14) return 'semana-que-vem';
+        return 'proximas';
+      }
+
+      // "...Jardim ..., Botucatu, SP" -> "Botucatu · SP"
+      function cidadeDeEndereco(addr) {
+        if (!addr) return '';
+        var partes = String(addr).split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        for (var i = partes.length - 1; i >= 0; i--) {
+          if (/^[A-Z]{2}$/.test(partes[i])) {
+            var cidade = partes[i - 1] || '';
+            return cidade ? cidade + ' · ' + partes[i] : partes[i];
+          }
+        }
+        return partes[partes.length - 1] || '';
+      }
+
+      function extrairDados(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var out = {};
+
+        // 1) Dados estruturados (schema.org Event via JSON-LD) — o mais confiável
+        var evento = null;
+        doc.querySelectorAll('script[type="application/ld+json"]').forEach(function (b) {
+          if (evento) return;
+          try {
+            var json = JSON.parse(b.textContent);
+            var arr = Array.isArray(json) ? json : (json['@graph'] || [json]);
+            arr.forEach(function (o) {
+              var t = o && o['@type'];
+              var ehEvento = t === 'Event' || (Array.isArray(t) && t.indexOf('Event') > -1) ||
+                             (typeof t === 'string' && /Event$/.test(t));
+              if (!evento && ehEvento) evento = o;
+            });
+          } catch (e) {}
+        });
+
+        if (evento) {
+          out.nome = evento.name || '';
+          if (evento.startDate) {
+            out.data = formatarData(evento.startDate);
+            out.categoria = categoriaPorData(evento.startDate);
+          }
+          out.imagem = typeof evento.image === 'string' ? evento.image
+                     : (evento.image && (evento.image.url || evento.image[0])) || '';
+          if (evento.location) {
+            out.local = evento.location.name || '';
+            var addr = evento.location.address;
+            if (addr && typeof addr === 'object') {
+              out.cidade = ((addr.addressLocality || '') + (addr.addressRegion ? ' · ' + addr.addressRegion : '')).trim();
+            } else {
+              out.cidade = cidadeDeEndereco(addr);
+            }
+          }
+          if (evento.description) out.descricao = String(evento.description).trim();
+        }
+
+        // 2) Fallback: meta tags Open Graph
+        function meta(prop) {
+          var el = doc.querySelector('meta[property="' + prop + '"], meta[name="' + prop + '"]');
+          return el ? (el.getAttribute('content') || '') : '';
+        }
+        if (!out.nome) out.nome = (meta('og:title') || doc.title || '').split(' | ')[0].trim();
+        if (!out.imagem) out.imagem = meta('og:image');
+        if (!out.descricao) { var d = meta('og:description'); if (d) out.descricao = d.trim(); }
+
+        return out;
+      }
+
+      // Descobre a URL "base" do evento e a URL da lista de ingressos.
+      // (No Blacktag, o lote/preço só aparecem em .../ingressos.)
+      function urlsDoEvento(url) {
+        var limpa = String(url).replace(/[#?].*$/, '').replace(/\/+$/, '');
+        if (/\/ingressos$/i.test(limpa)) {
+          return { base: limpa.replace(/\/ingressos$/i, ''), ingressos: limpa };
+        }
+        return { base: limpa, ingressos: limpa + '/ingressos' };
+      }
+
+      // Lê lote e preço da página de ingressos (HTML com .allotment e .price).
+      function extrairLotePreco(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var out = {};
+
+        var lote = doc.querySelector('.allotment');
+        if (lote) {
+          var t = lote.textContent.replace(/\s+/g, ' ').trim();
+          if (t) out.lote = t.replace(/lote/i, 'lote'); // "3º Lote" -> "3º lote"
+        }
+
+        // menor preço entre os ingressos -> "A partir de R$ X"
+        var valores = [];
+        doc.querySelectorAll('.price').forEach(function (p) {
+          var m = p.textContent.replace(/\./g, '').match(/(\d+)(?:,\d+)?/);
+          if (m) valores.push(parseInt(m[1], 10));
+        });
+        if (valores.length) out.preco = 'A partir de R$ ' + Math.min.apply(null, valores);
+
+        // tipos de ingresso (títulos dos grupos: "Entrada", "Pista", "VIP"…)
+        var nomes = [];
+        doc.querySelectorAll('.ticket-groups h5').forEach(function (h) {
+          var t = h.textContent.replace(/\s+/g, ' ').trim();
+          if (t && nomes.indexOf(t) === -1) nomes.push(t);
+        });
+        if (nomes.length) out.tipos = nomes.join(' · ');
+
+        return out;
+      }
+
+      // Converte um trecho de HTML em texto preservando quebras de linha.
+      function textoComQuebras(el) {
+        var c = el.cloneNode(true);
+        c.querySelectorAll('br').forEach(function (b) { b.replaceWith(document.createTextNode('\n')); });
+        c.querySelectorAll('p,div,li,h1,h2,h3,h4,h5,h6,tr').forEach(function (b) {
+          b.appendChild(document.createTextNode('\n'));
+        });
+        var t = (c.textContent || '').replace(/ /g, ' ');
+        return t.replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      }
+
+      // A partir do texto da descrição, separa em campos organizados:
+      // line-up (ATRAÇÕES), classificação etária e regras (AVISOS).
+      function organizarDescricao(texto) {
+        var out = { descricao: texto };
+        if (!texto) return out;
+
+        var mid = texto.match(/menores de\s*(\d{1,2})/i) || texto.match(/(\d{1,2})\s*anos/i);
+        if (mid) out.idade = mid[1] + ' anos';
+
+        var capt = null, lineup = [], avisos = [];
+        texto.split('\n').forEach(function (l) {
+          var t = l.trim();
+          if (!t) return;
+          var titulo = t.replace(/[^A-Za-zÀ-ÿ]/g, '').toUpperCase();
+          if (/^(ATRA[CÇ]|LINEUP|ATRACOES)/.test(titulo)) { capt = 'lineup'; return; }
+          if (/AVISO|REGRA|IMPORTANTE|POL[IÍ]TICA/.test(titulo)) { capt = 'avisos'; return; }
+          if (/^(LOCAL|VENDAS?|SAVETHEDATE|INGRESSO|DATA|HOR[AÁ]RIO)/.test(titulo)) { capt = null; return; }
+          var limpo = t.replace(/^[^\wÀ-ÿ]+/, '').trim(); // tira bullet/emoji do começo
+          if (capt === 'lineup' && limpo) lineup.push(limpo);
+          else if (capt === 'avisos' && limpo) avisos.push(limpo);
+        });
+        if (lineup.length) out.lineup = lineup.join(', ');
+        if (avisos.length) out.regras = avisos.join(' ');
+        return out;
+      }
+
+      // Descrição rica do corpo da página (Blacktag usa <section id="description">).
+      function extrairDetalhes(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var el = doc.querySelector('#description .text-secondary')
+              || doc.querySelector('#description')
+              || doc.querySelector('[class*="description" i]')
+              || doc.querySelector('[class*="descricao" i]');
+        if (!el) return {};
+        var texto = textoComQuebras(el).replace(/^\s*descri[cç][aã]o do evento\s*/i, '').trim();
+        return organizarDescricao(texto);
+      }
+
+      $('btn-importar-url').addEventListener('click', function () {
+        var url = $('f-importar-url').value.trim();
+        if (!/^https?:\/\//i.test(url)) {
+          statusImport('Cole um link completo, começando com https://', 'erro');
+          return;
+        }
+        var btn = this;
+        btn.disabled = true;
+        statusImport('Buscando as informações do link… (pode levar alguns segundos)');
+
+        var urls = urlsDoEvento(url);
+        // Página base (nome, data, local…) e página de ingressos (lote, preço).
+        Promise.all([
+          buscarHtml(urls.base).catch(function () { return ''; }),
+          buscarHtml(urls.ingressos).catch(function () { return ''; })
+        ]).then(function (res) {
+          var d = res[0] ? extrairDados(res[0]) : {};
+          // se a base não trouxe nome/data, tenta os mesmos dados na página de ingressos
+          if ((!d.nome || !d.data) && res[1]) {
+            var d2 = extrairDados(res[1]);
+            ['nome', 'data', 'local', 'cidade', 'imagem', 'descricao', 'categoria'].forEach(function (k) {
+              if (!d[k] && d2[k]) d[k] = d2[k];
+            });
+          }
+          var det = res[0] ? extrairDetalhes(res[0]) : {};
+          var lp = res[1] ? extrairLotePreco(res[1]) : {};
+          var descricao = det.descricao || d.descricao;
+
+          if (!d.nome && !d.data && !d.imagem && !descricao && !lp.lote && !lp.preco) throw new Error('nada');
+
+          // Preenche só o que veio — não apaga o que você já tinha digitado.
+          if (d.nome) $('f-nome').value = d.nome;
+          if (d.data) $('f-data').value = d.data;
+          if (d.local) $('f-local').value = d.local;
+          if (d.cidade) $('f-cidade').value = d.cidade;
+          if (d.categoria) $('f-categoria').value = d.categoria;
+          if (d.imagem) $('f-imagem').value = d.imagem;
+          if (descricao) $('f-descricao').value = descricao;
+          if (det.lineup) $('f-lineup').value = det.lineup;
+          if (det.idade) $('f-idade').value = det.idade;
+          if (det.regras) $('f-regras').value = det.regras;
+          if (lp.tipos) $('f-tipos').value = lp.tipos;
+          if (lp.lote) $('f-lote').value = lp.lote;
+          if (lp.preco) $('f-preco').value = lp.preco;
+
+          // Guarda a origem para depois "Conferir lotes" e ver se mudou.
+          $('f-origem').value = urls.base;
+
+          var faltam = [];
+          if (!$('f-preco').value) faltam.push('preço');
+          if (!$('f-lote').value) faltam.push('lote');
+          statusImport('✅ Puxei o máximo de informações do evento!' +
+            (faltam.length ? ' Confira e complete o que faltar (' + faltam.join(', ') + ').' : ' Confira tudo antes de adicionar.'),
+            'ok');
+          window.scrollTo({ top: form.offsetTop - 90, behavior: 'smooth' });
+        }).catch(function () {
+          statusImport('Não consegui ler esse link automaticamente. Alguns sites bloqueiam a leitura — tente outro link ou preencha manualmente.', 'erro');
+        }).then(function () {
+          btn.disabled = false;
+        });
+      });
+
+      // Enter no campo do link dispara a extração
+      $('f-importar-url').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); $('btn-importar-url').click(); }
+      });
+
+      // ===== Conferir lotes/preços na origem =====
+      function confStatus(msg) { $('conferencia-status').textContent = msg || ''; }
+
+      function aplicarMudanca(id, novo, botao) {
+        var ev = eventos.find(function (e) { return e.id === id; });
+        if (!ev) return;
+        if (novo.lote) ev.lote = novo.lote;
+        if (novo.preco) ev.preco = novo.preco;
+        salvar(); // grava e redesenha a lista de eventos
+        if (botao) { botao.textContent = 'Atualizado ✓'; botao.disabled = true; }
+        avisar('Atualizado: ' + ev.nome);
+      }
+
+      function renderConferencia(mudancas, iguais, erros) {
+        var box = $('resultado-conferencia');
+        box.innerHTML = '';
+        confStatus(mudancas.length + ' com mudança · ' + iguais + ' sem mudança' +
+          (erros ? ' · ' + erros + ' não conferido(s)' : ''));
+
+        if (!mudancas.length) return;
+
+        mudancas.forEach(function (m) {
+          var linha = document.createElement('div');
+          linha.className = 'numero-linha';
+
+          var info = document.createElement('div');
+          info.style.flex = '1';
+          info.style.minWidth = '240px';
+          var nome = document.createElement('div');
+          nome.style.fontWeight = '800';
+          nome.textContent = m.ev.nome;
+          var det = document.createElement('div');
+          det.style.color = '#4ade80';
+          det.style.fontSize = '14px';
+          var partes = [];
+          if (m.mudouLote) partes.push('lote: ' + (m.ev.lote || '—') + ' → ' + m.novo.lote);
+          if (m.mudouPreco) partes.push('preço: ' + (m.ev.preco || '—') + ' → ' + m.novo.preco);
+          det.textContent = partes.join('   ·   ');
+          info.appendChild(nome);
+          info.appendChild(det);
+
+          var btn = document.createElement('button');
+          btn.className = 'btn btn-primario';
+          btn.textContent = 'Atualizar';
+          btn.addEventListener('click', function () { aplicarMudanca(m.ev.id, m.novo, btn); });
+
+          linha.appendChild(info);
+          linha.appendChild(btn);
+          box.appendChild(linha);
+        });
+
+        if (mudancas.length > 1) {
+          var todos = document.createElement('button');
+          todos.className = 'btn btn-fantasma';
+          todos.textContent = 'Atualizar todos';
+          todos.addEventListener('click', function () {
+            mudancas.forEach(function (m) { aplicarMudanca(m.ev.id, m.novo); });
+            todos.textContent = 'Todos atualizados ✓';
+            todos.disabled = true;
+            box.querySelectorAll('.btn-primario').forEach(function (b) { b.disabled = true; b.textContent = 'Atualizado ✓'; });
+          });
+          box.appendChild(todos);
+        }
+      }
+
+      $('btn-conferir-lotes').addEventListener('click', function () {
+        var alvo = eventos.filter(function (e) { return e.origem; });
+        var box = $('resultado-conferencia');
+        box.innerHTML = '';
+        if (!alvo.length) {
+          confStatus('Nenhum evento importado de um link ainda. Use "Importar de um link" para poder acompanhar os lotes.');
+          return;
+        }
+        var btn = this;
+        btn.disabled = true;
+
+        var i = 0, mudancas = [], iguais = 0, erros = 0;
+        function proximo() {
+          if (i >= alvo.length) {
+            btn.disabled = false;
+            renderConferencia(mudancas, iguais, erros);
+            return;
+          }
+          var ev = alvo[i++];
+          confStatus('Conferindo ' + i + ' de ' + alvo.length + ': ' + ev.nome + '…');
+          var urls = urlsDoEvento(ev.origem);
+          buscarHtml(urls.ingressos).then(function (html) {
+            var lp = extrairLotePreco(html);
+            var mudouLote = !!lp.lote && lp.lote.toLowerCase() !== String(ev.lote || '').toLowerCase();
+            var mudouPreco = !!lp.preco && lp.preco !== (ev.preco || '');
+            if (mudouLote || mudouPreco) {
+              mudancas.push({ ev: ev, novo: lp, mudouLote: mudouLote, mudouPreco: mudouPreco });
+            } else if (lp.lote || lp.preco) {
+              iguais++;
+            } else {
+              erros++; // não achou lote/preço na página
+            }
+          }).catch(function () { erros++; }).then(proximo);
+        }
+        proximo();
+      });
+
+      desenharNumeros();
+      preencherSelectNumeros();
+      desenharTudo();
+    })();
+  </script>
+
+</body>
+</html>

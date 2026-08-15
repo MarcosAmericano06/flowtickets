@@ -1,0 +1,10 @@
+# --- Design Studio (artes) ---
+# Ferramenta LOCAL de geracao de artes. NAO faz parte do site publicado
+# e contem a chave secreta do Gemini. Fica de fora do repositorio inteiro.
+design-studio/
+
+# Sistema / editores
+.DS_Store
+
+# Config local do Claude Code (nao faz parte do site)
+.claude/
