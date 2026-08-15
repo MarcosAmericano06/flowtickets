@@ -407,6 +407,10 @@
         <input type="text" id="f-imagem" placeholder="https://...">
       </div>
       <div class="campo largo">
+        <label for="f-link-compra">Link de compra <small>(o botão "Comprar com desconto Flow" abre este link — se ficar vazio, abre o WhatsApp)</small></label>
+        <input type="text" id="f-link-compra" placeholder="https://... (link da plataforma de venda)">
+      </div>
+      <div class="campo largo">
         <label for="f-lineup">Line-up / atrações <small>(opcional)</small></label>
         <input type="text" id="f-lineup" placeholder="Ex.: DJ Fulano, Banda Ciclano, MC Beltrano">
       </div>
@@ -690,6 +694,7 @@
           selo: $('f-selo').value.trim(),
           esgotado: $('f-esgotado').checked,
           imagem: $('f-imagem').value.trim(),
+          linkCompra: $('f-link-compra').value.trim(),
           lineup: $('f-lineup').value.trim(),
           regras: $('f-regras').value.trim(),
           descricao: $('f-descricao').value.trim(),
@@ -712,6 +717,7 @@
         $('f-selo').value = ev.selo || '';
         $('f-esgotado').checked = !!ev.esgotado;
         $('f-imagem').value = ev.imagem || '';
+        $('f-link-compra').value = ev.linkCompra || '';
         $('f-lineup').value = ev.lineup || '';
         $('f-regras').value = ev.regras || '';
         $('f-descricao').value = ev.descricao || '';
@@ -931,10 +937,17 @@
       // direto (CORS). Usamos um proxy de leitura público, tentando alguns em
       // sequência até um responder. Quando o site tiver backend, isso vira uma
       // chamada no servidor (sem proxy).
+      // Vários proxies de leitura (o site é estático, então não dá pra ler outro
+      // domínio direto por causa do CORS). Tentamos um por um até algum responder.
+      // `json:true` = a resposta vem embrulhada em JSON ({contents:"<html>"}).
       var PROXIES = [
-        function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
-        function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); },
-        function (u) { return 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u); }
+        { url: function (u) { return 'https://proxy.cors.sh/' + u; } },
+        { url: function (u) { return 'https://corsproxy.org/?url=' + encodeURIComponent(u); } },
+        { url: function (u) { return 'https://cors.eu.org/' + u; } },
+        { url: function (u) { return 'https://api.allorigins.win/get?url=' + encodeURIComponent(u); }, json: true },
+        { url: function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
+        { url: function (u) { return 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u); } },
+        { url: function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); } }
       ];
 
       function statusImport(msg, tipo) {
@@ -947,10 +960,14 @@
         var i = 0;
         function tentar() {
           if (i >= PROXIES.length) return Promise.reject(new Error('proxies'));
-          var alvo = PROXIES[i++](url);
-          return fetch(alvo)
+          var p = PROXIES[i++];
+          return fetch(p.url(url))
             .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
-            .then(function (t) { if (!t || t.length < 200) throw new Error('vazio'); return t; })
+            .then(function (t) {
+              if (p.json) { try { t = JSON.parse(t).contents || ''; } catch (e) { t = ''; } }
+              if (!t || t.length < 200) throw new Error('vazio');
+              return t;
+            })
             .catch(function () { return tentar(); });
         }
         return tentar();
@@ -967,6 +984,37 @@
         var wd = new Date(Date.UTC(y, mo - 1, d)).getUTCDay();
         var hora = mi > 0 ? (h + 'h' + (mi < 10 ? '0' : '') + mi) : (h + 'h');
         return SEMANA[wd] + ' · ' + (d < 10 ? '0' : '') + d + ' ' + MESES[mo - 1] + ' · ' + hora;
+      }
+
+      // Dia+mês (com ano opcional) -> "15 Ago" ou "Sex · 15 Ago" se souber o ano.
+      function formatarDataDM(d, mo, y) {
+        if (d < 1 || d > 31 || mo < 1 || mo > 12) return '';
+        var dd = (d < 10 ? '0' : '') + d;
+        var txt = dd + ' ' + MESES[mo - 1];
+        if (y) {
+          if (y < 100) y += 2000;
+          var wd = new Date(Date.UTC(y, mo - 1, d)).getUTCDay();
+          txt = SEMANA[wd] + ' · ' + txt;
+        }
+        return txt;
+      }
+
+      // Tenta achar uma data solta num texto (título/descrição): "15.08",
+      // "15/08/2026", "15 de agosto"... Retorna algo como "15 Ago" (ou vazio).
+      var MESES_CURTO = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+      function sniffData(txt) {
+        if (!txt) return '';
+        var m = String(txt).match(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{2,4}))?\b/);
+        if (m) {
+          var dt = formatarDataDM(+m[1], +m[2], m[3] ? +m[3] : 0);
+          if (dt) return dt;
+        }
+        var m2 = String(txt).match(/\b(\d{1,2})\s*(?:de\s*)?(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-zç]*\b/i);
+        if (m2) {
+          var mo = MESES_CURTO.indexOf(m2[2].toLowerCase().slice(0, 3)) + 1;
+          return formatarDataDM(+m2[1], mo, 0);
+        }
+        return '';
       }
 
       // Escolhe o filtro do site a partir da data do evento.
@@ -1041,9 +1089,31 @@
           var el = doc.querySelector('meta[property="' + prop + '"], meta[name="' + prop + '"]');
           return el ? (el.getAttribute('content') || '') : '';
         }
-        if (!out.nome) out.nome = (meta('og:title') || doc.title || '').split(' | ')[0].trim();
-        if (!out.imagem) out.imagem = meta('og:image');
-        if (!out.descricao) { var d = meta('og:description'); if (d) out.descricao = d.trim(); }
+        var rawTitle = meta('og:title') || meta('twitter:title') || doc.title || '';
+        if (!out.nome && rawTitle) {
+          // primeiro trecho antes de "|", "–" ou "—" (tira sufixo do site / data solta)
+          out.nome = rawTitle.split(/\s*[|–—]\s*/)[0].trim();
+        }
+        if (!out.imagem) out.imagem = meta('og:image') || meta('twitter:image') || '';
+        if (!out.descricao) {
+          var d = meta('og:description') || meta('twitter:description') || meta('description');
+          if (d) out.descricao = d.trim();
+        }
+
+        // Data: se não veio estruturada, tenta achar no título e depois na descrição.
+        if (!out.data) {
+          var dt = sniffData(rawTitle) || sniffData(out.descricao || '');
+          if (dt) out.data = dt;
+        }
+        // Categoria por mês (Dez = Réveillon, Fev = Carnaval) quando dá pra saber.
+        if (!out.categoria && out.data) {
+          var mm = out.data.match(/\b(Jan|Fev|Mar|Abr|Mai|Jun|Jul|Ago|Set|Out|Nov|Dez)\b/);
+          if (mm) {
+            var mnum = MESES.indexOf(mm[1]) + 1;
+            if (mnum === 12) out.categoria = 'reveillon';
+            else if (mnum === 2) out.categoria = 'carnaval';
+          }
+        }
 
         return out;
       }

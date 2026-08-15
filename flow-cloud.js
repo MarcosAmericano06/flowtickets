@@ -16,12 +16,12 @@
 
 // >>> COLE AQUI o firebaseConfig do seu projeto (substitua os valores vazios) <<<
 var FLOW_FIREBASE_CONFIG = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: ''
+  apiKey: 'AIzaSyDlkYKVaEkW985u4xrkHsReHCh-HgMYfLc',
+  authDomain: 'flowtickets-2608142153.firebaseapp.com',
+  projectId: 'flowtickets-2608142153',
+  storageBucket: 'flowtickets-2608142153.firebasestorage.app',
+  messagingSenderId: '99488729446',
+  appId: '1:99488729446:web:01e6f62e7e8ac92e2a60a7'
 };
 
 // Onde os dados ficam guardados no Firestore (colecao / documento).

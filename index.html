@@ -1103,9 +1103,14 @@
             '</a>' +
             '<div class="modal-obs">Evento esgotado — avisamos você se abrir novo lote.</div>';
         } else {
+          // Link do botão "Comprar com desconto Flow": usa o link cadastrado no
+          // admin (ev.linkCompra); se não houver, cai no WhatsApp como antes.
+          var linkDesconto = ev.linkCompra
+            ? ev.linkCompra
+            : flowLinkWhats(ev, 'Quero comprar com o desconto Flow (10% OFF).');
           compraHtml =
             '<a class="btn-comprar-grande flow" target="_blank" rel="noopener" href="' +
-              esc(flowLinkWhats(ev, 'Quero comprar com o desconto Flow (10% OFF).')) + '" data-comprar="1">' +
+              esc(linkDesconto) + '" data-comprar="1">' +
               '<span class="rotulo">Comprar com desconto Flow <span class="off">10% OFF</span></span>' +
             '</a>' +
 
