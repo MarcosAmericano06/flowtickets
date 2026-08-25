@@ -8,3 +8,6 @@ design-studio/
 
 # Config local do Claude Code (nao faz parte do site)
 .claude/
+
+# Credenciais do painel (local, nunca publicar)
+CREDENCIAIS-ADMIN.txt
