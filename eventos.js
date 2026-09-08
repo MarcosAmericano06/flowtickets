@@ -179,7 +179,8 @@ var FLOW_CATEGORIAS = {
   'semana-que-vem': 'Semana que vem',
   'proximas':       'Próximas festas',
   'reveillon':      'Réveillon',
-  'carnaval':       'Carnaval'
+  'carnaval':       'Carnaval',
+  'universitarias': 'Festas Universitárias'
 };
 
 function flowCarregarEventos() {

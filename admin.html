@@ -339,7 +339,7 @@
 
     <div class="importar">
       <span class="imp-label">⚡ Importar de um link</span>
-      <div class="imp-sub">Cole o link do evento em outro site (ex.: Blacktag) e a gente preenche o formulário sozinho. Nome, data, local, cidade e imagem costumam vir; preço e lote você confere depois.</div>
+      <div class="imp-sub">Cole o link do evento em outro site (ex.: Blacktag ou Gandaya) e a gente preenche o formulário sozinho. Nome, data, local, cidade e imagem costumam vir; preço e lote você confere depois. A Ingresse bloqueia leitura automática — nela, preencha manualmente.</div>
       <div class="importar-linha">
         <input type="text" id="f-importar-url" placeholder="https://blacktag.com.br/eventos/32646/bailao-boi-na-zona">
         <button type="button" class="btn btn-primario" id="btn-importar-url">Extrair informações</button>
@@ -372,11 +372,16 @@
           <option value="proximas" selected>Próximas festas</option>
           <option value="reveillon">Réveillon</option>
           <option value="carnaval">Carnaval</option>
+          <option value="universitarias">Festas Universitárias</option>
         </select>
       </div>
       <div class="campo">
         <label for="f-tipos">Tipos de ingresso <small>(separe com ·)</small></label>
         <input type="text" id="f-tipos" placeholder="Ex.: Pista · Open Bar">
+      </div>
+      <div class="campo">
+        <label for="f-labels">Labels do evento <small>(etiquetas que aparecem no card — separe com vírgula)</small></label>
+        <input type="text" id="f-labels" placeholder="Ex.: Universitária, Open Bar">
       </div>
       <div class="campo">
         <label for="f-preco">Preço <small>(como aparece no site)</small></label>
@@ -501,7 +506,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260805d"></script>
+  <script src="eventos.js?v=20260907"></script>
   <script>
     (function () {
       var eventos = flowCarregarEventos();
@@ -688,6 +693,7 @@
           cidade: $('f-cidade').value.trim() || 'São Paulo · SP',
           categoria: $('f-categoria').value,
           tipos: $('f-tipos').value.trim(),
+          labels: $('f-labels').value.trim(),
           preco: $('f-preco').value.trim(),
           lote: $('f-lote').value.trim(),
           idade: $('f-idade').value.trim(),
@@ -711,6 +717,7 @@
         $('f-cidade').value = ev.cidade || 'São Paulo · SP';
         $('f-categoria').value = ev.categoria || 'proximas';
         $('f-tipos').value = ev.tipos || '';
+        $('f-labels').value = ev.labels || '';
         $('f-preco').value = ev.preco || '';
         $('f-lote').value = ev.lote || '';
         $('f-idade').value = ev.idade || '';
@@ -940,12 +947,13 @@
       // Vários proxies de leitura (o site é estático, então não dá pra ler outro
       // domínio direto por causa do CORS). Tentamos um por um até algum responder.
       // `json:true` = a resposta vem embrulhada em JSON ({contents:"<html>"}).
+      // `headers` = cabeçalhos extras que o proxy precisa (o r.jina.ai devolve o
+      // HTML original quando pedimos com x-respond-with: html).
       var PROXIES = [
-        { url: function (u) { return 'https://proxy.cors.sh/' + u; } },
-        { url: function (u) { return 'https://corsproxy.org/?url=' + encodeURIComponent(u); } },
-        { url: function (u) { return 'https://cors.eu.org/' + u; } },
-        { url: function (u) { return 'https://api.allorigins.win/get?url=' + encodeURIComponent(u); }, json: true },
+        { url: function (u) { return 'https://r.jina.ai/' + u; }, headers: { 'x-respond-with': 'html' } },
         { url: function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
+        { url: function (u) { return 'https://api.allorigins.win/get?url=' + encodeURIComponent(u); }, json: true },
+        { url: function (u) { return 'https://cors.eu.org/' + u; } },
         { url: function (u) { return 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u); } },
         { url: function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); } }
       ];
@@ -961,11 +969,15 @@
         function tentar() {
           if (i >= PROXIES.length) return Promise.reject(new Error('proxies'));
           var p = PROXIES[i++];
-          return fetch(p.url(url))
+          return fetch(p.url(url), p.headers ? { headers: p.headers } : undefined)
             .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
             .then(function (t) {
               if (p.json) { try { t = JSON.parse(t).contents || ''; } catch (e) { t = ''; } }
               if (!t || t.length < 200) throw new Error('vazio');
+              // Página de desafio anti-robô (Cloudflare) não serve — tenta o próximo.
+              if (/Just a moment|challenges\.cloudflare\.com|cf-browser-verification/i.test(t.slice(0, 3000))) {
+                throw new Error('bloqueado');
+              }
               return t;
             })
             .catch(function () { return tentar(); });
@@ -1119,13 +1131,15 @@
       }
 
       // Descobre a URL "base" do evento e a URL da lista de ingressos.
-      // (No Blacktag, o lote/preço só aparecem em .../ingressos.)
+      // (No Blacktag, o lote/preço só aparecem em .../ingressos. Nos outros
+      //  sites essa página não existe, então nem perdemos tempo buscando.)
       function urlsDoEvento(url) {
         var limpa = String(url).replace(/[#?].*$/, '').replace(/\/+$/, '');
+        var ehBlacktag = /blacktag\.com\.br/i.test(limpa);
         if (/\/ingressos$/i.test(limpa)) {
           return { base: limpa.replace(/\/ingressos$/i, ''), ingressos: limpa };
         }
-        return { base: limpa, ingressos: limpa + '/ingressos' };
+        return { base: limpa, ingressos: ehBlacktag ? limpa + '/ingressos' : '' };
       }
 
       // Lê lote e preço da página de ingressos (HTML com .allotment e .price).
@@ -1221,7 +1235,7 @@
         // Página base (nome, data, local…) e página de ingressos (lote, preço).
         Promise.all([
           buscarHtml(urls.base).catch(function () { return ''; }),
-          buscarHtml(urls.ingressos).catch(function () { return ''; })
+          urls.ingressos ? buscarHtml(urls.ingressos).catch(function () { return ''; }) : Promise.resolve('')
         ]).then(function (res) {
           var d = res[0] ? extrairDados(res[0]) : {};
           // se a base não trouxe nome/data, tenta os mesmos dados na página de ingressos
@@ -1263,7 +1277,11 @@
             'ok');
           window.scrollTo({ top: form.offsetTop - 90, behavior: 'smooth' });
         }).catch(function () {
-          statusImport('Não consegui ler esse link automaticamente. Alguns sites bloqueiam a leitura — tente outro link ou preencha manualmente.', 'erro');
+          if (/ingresse\.com/i.test(url)) {
+            statusImport('A Ingresse bloqueia a leitura automática (proteção anti-robô). Abra a página do evento, copie nome, data e o endereço da imagem, e preencha aqui manualmente.', 'erro');
+          } else {
+            statusImport('Não consegui ler esse link automaticamente. Alguns sites bloqueiam a leitura — tente de novo em instantes ou preencha manualmente.', 'erro');
+          }
         }).then(function () {
           btn.disabled = false;
         });
