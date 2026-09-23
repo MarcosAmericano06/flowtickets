@@ -27,7 +27,7 @@ Marcos está montando o site e o painel da **FlowTickets**, plataforma de ingres
 - **Tagline:** "Máquina de Distribuição para Entretenimento".
 - **Fonte:** geométrica — usei **Archivo** (Google Fonts) como aproximação.
 - **Logo:** ainda só existe em print (falta arquivo SVG/PNG).
-- **WhatsApp oficial:** **+55 11 99640-0247** (`5511996400247`).
+- **WhatsApp oficial:** **+55 11 97689-2592** (`5511976892592`).
 - **Instagram:** **@flowticketss** (instagram.com/flowticketss).
 - **Domínio, CNPJ e e-mail:** ainda NÃO existem.
 - Operação com ~10–15 eventos rodando.

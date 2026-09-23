@@ -6,7 +6,7 @@
 // que aparecem hoje na Maré Ticket. Data, preço e lote são PLACEHOLDERS realistas —
 // a equipe Flow ajusta os valores exatos pelo painel (admin.html).
 
-var FLOW_WHATS_PADRAO = '5511996400247';
+var FLOW_WHATS_PADRAO = '5511976892592';
 
 // Mensagem que já vai preenchida no WhatsApp quando o cliente clica em comprar.
 // (As frases de "boas-vindas" que vocês mandaram servem para a resposta automática
@@ -303,6 +303,13 @@ function flowCarregarConfig() {
   if (!Array.isArray(cfg.numeros) || !cfg.numeros.length) {
     cfg.numeros = [{ id: 'principal', label: 'Principal', numero: cfg.whats }];
   }
+  // Set/2026: o número principal mudou. Configs salvas com o antigo passam a
+  // usar o novo (no site e no painel; ao salvar no painel, o novo fica gravado).
+  var FLOW_WHATS_ANTIGO = '5511996400247';
+  if (cfg.whats === FLOW_WHATS_ANTIGO) cfg.whats = FLOW_WHATS_PADRAO;
+  cfg.numeros.forEach(function (n) {
+    if (n.numero === FLOW_WHATS_ANTIGO) n.numero = FLOW_WHATS_PADRAO;
+  });
   return cfg;
 }
 

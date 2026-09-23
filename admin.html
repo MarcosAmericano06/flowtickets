@@ -480,7 +480,7 @@
         <button class="btn btn-primario" id="btn-salvar-numeros">Salvar WhatsApps</button>
       </div>
       <p class="aviso">
-        Cadastre quantos números quiser (só dígitos, com DDI — ex.: <b>5511996400247</b>).
+        Cadastre quantos números quiser (só dígitos, com DDI — ex.: <b>5511976892592</b>).
         O número marcado como <b>Padrão</b> recebe os eventos em que você não escolher um número específico.
         Em cada evento, use o campo <b>"WhatsApp deste evento"</b> para direcionar os pedidos daquele evento.
       </p>
@@ -523,7 +523,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260922"></script>
+  <script src="eventos.js?v=20260923"></script>
   <script>
     (function () {
       var eventos = flowCarregarEventos();
@@ -848,7 +848,7 @@
         var num = document.createElement('input');
         num.type = 'text';
         num.className = 'n-num';
-        num.placeholder = '5511996400247';
+        num.placeholder = '5511976892592';
         num.value = n.numero || '';
 
         var padrao = document.createElement('label');
@@ -925,7 +925,7 @@
           if (ehPadrao) padraoNum = num;
         });
 
-        if (incompleto) { avisar('Algum número está incompleto. Use DDI+DDD+número (ex.: 5511996400247).'); return; }
+        if (incompleto) { avisar('Algum número está incompleto. Use DDI+DDD+número (ex.: 5511976892592).'); return; }
         if (!numeros.length) { avisar('Cadastre ao menos um número.'); return; }
         if (!padraoNum) padraoNum = numeros[0].numero; // se ninguém marcou, o 1º é padrão
 
