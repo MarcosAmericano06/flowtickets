@@ -7,7 +7,7 @@
   <meta name="description" content="Flow Tickets: máquina de distribuição para entretenimento. Ingressos com segurança para os maiores eventos do país.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Caveat+Brush&display=swap" rel="stylesheet">
   <style>
     :root {
       /* Marca */
@@ -62,8 +62,10 @@
       white-space: nowrap;
     }
     .logo img { height: 26px; width: auto; display: block; }
+    .logo .logo-texto .ponto { font-style: normal; color: var(--magenta); }
     .logo .logo-texto {
       font-weight: 900;
+      font-stretch: 125%;
       font-size: 24px;
       letter-spacing: 1px;
       color: var(--branco);
@@ -99,10 +101,24 @@
       gap: 28px;
     }
     nav a {
+      position: relative;
       color: rgba(255, 255, 255, 0.85);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 15px;
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    nav a + a::before {
+      content: '';
+      position: absolute;
+      left: -15.5px;
+      top: 50%;
+      width: 3px;
+      height: 3px;
+      margin-top: -1.5px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
     }
     nav a:hover { color: #ff5c8a; }
 
@@ -130,65 +146,148 @@
     }
     .redes-topo svg { width: 18px; height: 18px; display: block; }
 
-    /* ===== Hero ===== */
+    /* ===== Hero (capa) ===== */
     .hero {
       position: relative;
-      padding: 84px 24px 96px;
-      background: url('flow-hero.png') center / cover no-repeat, var(--preto);
+      min-height: min(88vh, 820px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 96px 64px 150px;
+      background: url('flow-capa.jpg') center 24% / cover no-repeat, var(--preto);
       color: var(--branco);
       overflow: hidden;
     }
+    /* escurece a esquerda (onde fica o texto) e a base, pra dar leitura */
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: radial-gradient(ellipse 68% 82% at 50% 46%, rgba(12,10,16,0.85) 32%, rgba(12,10,16,0.45) 68%, rgba(12,10,16,0.08) 100%);
+      background:
+        linear-gradient(90deg, rgba(12,10,16,0.92) 0%, rgba(12,10,16,0.7) 38%, rgba(12,10,16,0.15) 72%, rgba(12,10,16,0.05) 100%),
+        linear-gradient(0deg, rgba(12,10,16,0.95) 0%, rgba(12,10,16,0) 38%);
     }
     .hero .miolo {
       position: relative;
       z-index: 2;
-      max-width: 900px;
+      width: 100%;
+      max-width: 1200px;
       margin: 0 auto;
-      text-align: center;
     }
 
-    .hero .eyebrow {
-      display: inline-block;
+    .hero-tags {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 36px;
       font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 3px;
+      font-weight: 500;
+      letter-spacing: 6px;
       text-transform: uppercase;
-      color: var(--branco);
-      background: rgba(255, 122, 26, 0.14);
-      border: 1px solid rgba(255, 122, 26, 0.55);
-      border-radius: 999px;
-      padding: 8px 18px;
-      margin-bottom: 28px;
+      color: rgba(255, 255, 255, 0.72);
     }
 
     .hero h1 {
-      font-size: clamp(38px, 6vw, 74px);
+      font-size: clamp(46px, 6.6vw, 96px);
       font-weight: 900;
+      font-stretch: 125%;
       text-transform: uppercase;
-      line-height: 1.02;
-      max-width: 780px;
-      margin: 0 auto 22px;
+      line-height: 0.94;
+      letter-spacing: -0.01em;
+      margin-bottom: 26px;
     }
+    .hero h1 span { display: block; }
+    .hero h1 .menor { font-size: 0.74em; margin-top: 0.08em; }
     .hero h1 em {
       font-style: normal;
-      background: var(--gradiente);
+      background: linear-gradient(90deg, var(--laranja) 0%, var(--magenta) 55%, var(--roxo) 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .hero h1 .ponto { font-style: normal; color: var(--magenta); }
 
     .hero p {
-      font-size: 19px;
+      font-size: 21px;
       max-width: 520px;
-      margin: 0 auto 36px;
-      color: rgba(255, 255, 255, 0.72);
-      line-height: 1.6;
+      margin-bottom: 40px;
+      color: rgba(255, 255, 255, 0.82);
+      line-height: 1.5;
+    }
+
+    .hero-botoes .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      min-width: 320px;
+      padding: 19px 40px;
+      font-size: 16px;
+      letter-spacing: 4px;
+    }
+    .hero-botoes .btn svg { width: 20px; height: 20px; transition: transform 0.2s ease; }
+    .hero-botoes .btn:hover svg { transform: translateX(4px); }
+
+    /* rodapé da capa: lema à esquerda, assinatura à direita */
+    .hero-lema {
+      position: absolute;
+      z-index: 2;
+      left: 64px;
+      bottom: 64px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 5px;
+      line-height: 1.9;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.62);
+    }
+    .hero-lema::before {
+      content: '';
+      display: block;
+      width: 34px;
+      height: 1px;
+      margin-bottom: 18px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .hero-assinatura {
+      position: absolute;
+      z-index: 2;
+      right: 64px;
+      bottom: 54px;
+      font-family: 'Caveat Brush', cursive;
+      font-size: 40px;
+      line-height: 0.86;
+      color: var(--laranja);
+      transform: rotate(-11deg);
+      text-align: left;
+    }
+    .hero-assinatura::after {
+      content: '';
+      display: block;
+      width: 80%;
+      height: 2px;
+      margin: 12px 0 0 18%;
+      border-radius: 2px;
+      background: var(--laranja);
+      transform: rotate(-5deg);
+    }
+    /* "FLOW" gigante vazado no fundo */
+    .hero-marca {
+      position: absolute;
+      z-index: 1;
+      left: -0.04em;
+      bottom: -0.3em;
+      font-size: clamp(180px, 30vw, 460px);
+      font-weight: 900;
+      font-stretch: 125%;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.14);
+      transform: skewX(-14deg);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
     }
 
     /* Entrada suave dos elementos do banner */
@@ -196,10 +295,16 @@
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: none; }
     }
-    .hero .eyebrow  { animation: hero-subir 0.55s ease both; }
+    .hero-tags      { animation: hero-subir 0.55s ease both; }
     .hero h1        { animation: hero-subir 0.55s ease 0.1s both; }
     .hero p         { animation: hero-subir 0.55s ease 0.2s both; }
     .hero-botoes    { animation: hero-subir 0.55s ease 0.3s both; }
+    .hero-lema, .hero-assinatura { animation: hero-subir 0.6s ease 0.45s both; }
+    .hero-assinatura { animation-name: hero-assinar; }
+    @keyframes hero-assinar {
+      from { opacity: 0; transform: rotate(-11deg) translateY(16px); }
+      to   { opacity: 1; transform: rotate(-11deg); }
+    }
 
     .btn {
       display: inline-block;
@@ -227,12 +332,7 @@
     }
     .btn-secundario:hover { border-color: #ff5c8a; background: rgba(255, 38, 104, 0.12); }
 
-    .hero-botoes {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    .hero-botoes { display: flex; gap: 14px; flex-wrap: wrap; }
 
     /* ===== Faixa de destaques ===== */
     .destaques {
@@ -841,19 +941,35 @@
       header { padding: 14px 18px; flex-wrap: wrap; gap: 14px; }
       .logo .logo-texto { font-size: 22px; }
       .busca { order: 3; max-width: 100%; width: 100%; }
-      nav { margin-left: auto; gap: 16px; font-size: 14px; }
-      nav a { font-size: 14px; }
+      nav { margin-left: auto; gap: 18px; }
+      nav a { font-size: 10px; letter-spacing: 2.5px; }
+      nav a + a::before { left: -10.5px; }
       nav a.so-desktop { display: none; }
       .redes-topo { gap: 8px; }
       .redes-topo a { width: 34px; height: 34px; }
       .redes-topo svg { width: 16px; height: 16px; }
 
-      .hero { padding: 64px 20px 108px; background-position: 74% center; }
-      .hero::before { background: linear-gradient(90deg, rgba(12,10,16,0.94) 45%, rgba(12,10,16,0.55) 80%, rgba(12,10,16,0.35) 100%); }
-      .hero .eyebrow { font-size: 10px; letter-spacing: 2px; padding: 7px 14px; margin-bottom: 20px; }
-      .hero p { font-size: 16px; }
-      .hero-botoes { flex-direction: column; align-items: stretch; }
-      .hero-botoes .btn { width: 100%; padding: 15px 24px; text-align: center; }
+      .hero {
+        min-height: calc(100svh - 117px);
+        justify-content: flex-start;
+        padding: 44px 24px 190px;
+        background-size: auto 125%;
+        background-position: 80% 30%;
+      }
+      .hero::before {
+        background:
+          linear-gradient(90deg, rgba(12,10,16,0.85) 0%, rgba(12,10,16,0.55) 55%, rgba(12,10,16,0.1) 100%),
+          linear-gradient(0deg, rgba(12,10,16,0.96) 0%, rgba(12,10,16,0) 42%);
+      }
+      .hero-tags { font-size: 10px; letter-spacing: 5px; gap: 5px; margin-bottom: 30px; }
+      .hero h1 { font-size: clamp(40px, 12.4vw, 60px); margin-bottom: 18px; }
+      .hero h1 .menor { font-size: 0.6em; }
+      .hero p { font-size: 17px; margin-bottom: 30px; }
+      .hero-botoes .btn { min-width: 0; width: min(100%, 300px); padding: 17px 24px; font-size: 14px; letter-spacing: 3px; }
+      .hero-lema { left: 22px; bottom: 96px; font-size: 9px; letter-spacing: 4px; }
+      .hero-lema::before { margin-bottom: 14px; }
+      .hero-assinatura { right: 20px; bottom: 88px; font-size: 26px; }
+      .hero-marca { font-size: 44vw; bottom: -0.26em; }
 
       .destaques { margin: -48px 16px 0; padding: 24px 16px; }
       .destaque { border-right: none; border-bottom: 1px solid var(--borda); padding: 16px 8px; }
@@ -891,7 +1007,7 @@
 
   <header>
     <a class="logo" href="#">
-      <span class="logo-texto">FLOW.</span>
+      <span class="logo-texto">FLOW<i class="ponto">.</i></span>
     </a>
     <div class="busca">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -914,13 +1030,23 @@
 
   <section class="hero">
     <div class="miolo">
-      <span class="eyebrow">SEU PRÓXIMO EVENTO COMEÇA AQUI</span>
-      <h1>OS MELHORES <em>ROLÊS</em> ESTÃO NA <em>FLOW</em></h1>
-      <p>Compre com segurança, atendimento humano no WhatsApp e entre no flow.</p>
+      <div class="hero-tags"><span>Música</span><span>Pessoas</span><span>Experiências</span></div>
+      <h1>
+        <span>Seu</span>
+        <span>próximo</span>
+        <span><em>rolê</em></span>
+        <span class="menor">começa aqui<i class="ponto">.</i></span>
+      </h1>
+      <p>Os melhores eventos. Em um só lugar.</p>
       <div class="hero-botoes">
-        <a class="btn btn-primario" href="#eventos">Ver Eventos</a>
+        <a class="btn btn-primario" href="#eventos">Ver eventos
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
       </div>
     </div>
+    <div class="hero-lema">Mais que eventos,<br>movimento.</div>
+    <div class="hero-assinatura" aria-hidden="true">Good people<br>better nights</div>
+    <div class="hero-marca" aria-hidden="true">FLOW</div>
   </section>
 
   <div class="filtros">
