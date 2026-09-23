@@ -398,6 +398,19 @@ function flowLinkWhats(ev, extra) {
   return 'https://wa.me/' + flowNumeroDoEvento(ev) + '?text=' + encodeURIComponent(flowMensagemWhats(ev, extra));
 }
 
+// Link de atendimento/suporte (número principal) com mensagem pronta.
+var FLOW_MSG_SUPORTE = {
+  atendimento: '🎟️ Olá! Quero falar com o atendimento da Flow.',
+  compra:      '🎟️ Olá! Preciso de ajuda com uma compra/ingresso.',
+  recebimento: '🎟️ Olá! Comprei um ingresso e ainda não recebi. Pode me ajudar?',
+  evento:      '🎟️ Olá! Tenho uma dúvida sobre um evento.'
+};
+function flowLinkContato(msg) {
+  var promoter = flowPromoterAtual();
+  if (promoter) msg += '\n(Indicação: ' + promoter + ')';
+  return 'https://wa.me/' + flowCarregarConfig().whats + '?text=' + encodeURIComponent(msg);
+}
+
 // Preço com o desconto Flow (10% sobre o lote atual), arredondado.
 function flowPrecoDesconto(precoLote) {
   return Math.round(precoLote * 0.9);

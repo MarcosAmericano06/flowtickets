@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Políticas — Flow Tickets</title>
+  <meta name="description" content="Termos de Uso, Política de Privacidade e Política de Compra e Cancelamento da Flow Tickets.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --magenta: #ff2668;
+      --laranja: #ff7a1a;
+      --roxo:    #7a2ff7;
+      --preto:   #0c0a10;
+      --fundo:   #f4f2ea;
+      --superficie: #ffffff;
+      --tinta:   #17121f;
+      --tinta-2: #6a6478;
+      --borda:   #e8e4f0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body { font-family: 'Archivo', -apple-system, sans-serif; background: var(--fundo); color: var(--tinta); }
+
+    header {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 16px 48px;
+      background: rgba(12, 10, 16, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .logo { font-weight: 900; font-stretch: 125%; font-size: 24px; letter-spacing: 1px; color: #fff; text-decoration: none; }
+    .logo i { font-style: normal; color: var(--magenta); }
+    .voltar { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 12px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; }
+    .voltar:hover { color: #ff5c8a; }
+
+    .topo {
+      padding: 72px 24px 56px;
+      color: #fff;
+      background:
+        radial-gradient(ellipse 60% 80% at 85% 20%, rgba(255, 38, 104, 0.3), transparent),
+        radial-gradient(ellipse 50% 70% at 10% 90%, rgba(255, 122, 26, 0.22), transparent),
+        var(--preto);
+    }
+    .topo .miolo { max-width: 860px; margin: 0 auto; }
+    .topo .rotulo { font-size: 12px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: var(--laranja); margin-bottom: 14px; }
+    .topo h1 { font-size: clamp(34px, 6vw, 60px); font-weight: 900; font-stretch: 125%; text-transform: uppercase; line-height: 1; margin-bottom: 26px; }
+    .indice { display: flex; flex-wrap: wrap; gap: 10px; }
+    .indice a {
+      padding: 10px 18px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22); color: #fff; text-decoration: none;
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .indice a:hover { background: linear-gradient(90deg, #ff4438, #ff2668 45%, #7a2ff7); border-color: transparent; }
+
+    main { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+    .aviso {
+      font-size: 13px; line-height: 1.5; color: var(--tinta-2);
+      background: var(--superficie); border: 1px dashed var(--borda); border-radius: 14px;
+      padding: 14px 18px; margin-bottom: 36px;
+    }
+    section {
+      background: var(--superficie); border: 1px solid var(--borda); border-radius: 24px;
+      padding: 44px; margin-bottom: 24px;
+    }
+    section h2 { font-size: 26px; font-weight: 900; font-stretch: 115%; text-transform: uppercase; margin-bottom: 6px; }
+    section .atualizado { font-size: 12px; color: var(--tinta-2); margin-bottom: 26px; }
+    section h3 { font-size: 16px; font-weight: 800; margin: 26px 0 8px; }
+    section p, section li { font-size: 15px; line-height: 1.7; color: #3b3548; }
+    section ul { padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+
+    .ajuda {
+      text-align: center; padding: 48px 24px; border-radius: 24px; color: #fff;
+      background:
+        radial-gradient(ellipse 60% 80% at 15% 20%, rgba(255, 68, 56, 0.25), transparent),
+        radial-gradient(ellipse 60% 80% at 85% 80%, rgba(122, 47, 247, 0.3), transparent),
+        var(--preto);
+    }
+    .ajuda h2 { font-size: 26px; font-weight: 900; font-stretch: 115%; text-transform: uppercase; margin-bottom: 10px; }
+    .ajuda p { color: rgba(255,255,255,0.72); margin-bottom: 24px; }
+    .btn {
+      display: inline-block; padding: 16px 36px; border-radius: 999px;
+      background: var(--laranja); color: #fff; text-decoration: none;
+      font-weight: 800; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+      box-shadow: 0 12px 30px rgba(255, 122, 26, 0.32);
+    }
+    .btn:hover { filter: brightness(1.08); }
+
+    footer { text-align: center; padding: 28px 20px; font-size: 12px; color: rgba(255,255,255,0.45); background: var(--preto); }
+
+    @media (max-width: 720px) {
+      header { padding: 14px 18px; }
+      .topo { padding: 52px 20px 40px; }
+      main { padding: 32px 16px 60px; }
+      section { padding: 28px 22px; border-radius: 20px; }
+      section h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="index.html">FLOW<i>.</i></a>
+    <a class="voltar" href="index.html">← Voltar ao site</a>
+  </header>
+
+  <div class="topo">
+    <div class="miolo">
+      <div class="rotulo">Transparência</div>
+      <h1>Políticas da Flow</h1>
+      <nav class="indice">
+        <a href="#termos">Termos de Uso</a>
+        <a href="#privacidade">Privacidade</a>
+        <a href="#compra">Compra e cancelamento</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <p class="aviso">Estes textos resumem como a Flow funciona hoje. Eles podem ser atualizados a qualquer momento, e a versão publicada nesta página é a que vale.</p>
+
+    <section id="termos">
+      <h2>Termos de Uso</h2>
+      <div class="atualizado">Última atualização: setembro de 2026</div>
+
+      <h3>1. Sobre a Flow</h3>
+      <p>A Flow Tickets é uma plataforma de divulgação e venda de ingressos para eventos de entretenimento. Os eventos são organizados por produtores parceiros; a Flow faz a curadoria, a divulgação e o atendimento de venda.</p>
+
+      <h3>2. Uso do site</h3>
+      <p>Ao navegar pelo site ou comprar com a Flow, você concorda com estes termos. O site mostra informações de cada evento (data, local, line-up, lotes, preços e regras), que são fornecidas pelos produtores e podem mudar sem aviso prévio.</p>
+
+      <h3>3. Responsabilidades</h3>
+      <ul>
+        <li>A realização do evento, a programação, a estrutura e as regras de acesso são responsabilidade do produtor.</li>
+        <li>A Flow se compromete a vender apenas ingressos verificados e a prestar atendimento durante todo o processo de compra.</li>
+        <li>Você se compromete a informar dados verdadeiros na compra e a respeitar as regras de cada evento (idade mínima, documentos, itens proibidos etc.).</li>
+      </ul>
+
+      <h3>4. Conduta</h3>
+      <p>É proibido usar o site para revender ingressos de forma irregular, fraudar compras ou prejudicar o funcionamento da plataforma. A Flow pode recusar atendimento em caso de uso indevido.</p>
+
+      <h3>5. Propriedade intelectual</h3>
+      <p>A marca Flow, o layout e os textos do site pertencem à Flow Tickets. Flyers, nomes e marcas de eventos pertencem aos seus respectivos produtores.</p>
+    </section>
+
+    <section id="privacidade">
+      <h2>Política de Privacidade</h2>
+      <div class="atualizado">Última atualização: setembro de 2026 · Em conformidade com a LGPD (Lei 13.709/2018)</div>
+
+      <h3>1. Quais dados coletamos</h3>
+      <ul>
+        <li><b>Dados que você nos envia</b> ao falar com a gente pelo WhatsApp ou fechar uma compra: nome, telefone, e-mail, CPF e dados necessários para emitir o ingresso.</li>
+        <li><b>Dados de navegação:</b> o site guarda no seu próprio navegador informações simples, como o link de promoter pelo qual você chegou, para identificar a indicação.</li>
+      </ul>
+
+      <h3>2. Para que usamos</h3>
+      <ul>
+        <li>Processar sua compra e emitir e entregar o ingresso.</li>
+        <li>Prestar atendimento e suporte.</li>
+        <li>Identificar o promoter que indicou a compra.</li>
+        <li>Enviar novidades de eventos, somente se você autorizar.</li>
+      </ul>
+
+      <h3>3. Compartilhamento</h3>
+      <p>Seus dados são compartilhados apenas com o produtor do evento e com a plataforma de ingressos ou de pagamento envolvida na compra, na medida necessária para emitir o ingresso e liberar o seu acesso. Não vendemos seus dados.</p>
+
+      <h3>4. Segurança e prazo de guarda</h3>
+      <p>Adotamos medidas razoáveis para proteger seus dados e os guardamos apenas pelo tempo necessário para as finalidades acima ou para cumprir obrigações legais.</p>
+
+      <h3>5. Seus direitos</h3>
+      <p>Você pode pedir a qualquer momento acesso, correção ou exclusão dos seus dados, ou revogar autorizações dadas. Basta falar com a gente pelo WhatsApp.</p>
+    </section>
+
+    <section id="compra">
+      <h2>Compra e cancelamento</h2>
+      <div class="atualizado">Última atualização: setembro de 2026</div>
+
+      <h3>1. Como funciona a compra</h3>
+      <p>A compra é feita com a nossa equipe pelo WhatsApp ou pelo link de venda indicado em cada evento. Os preços seguem o lote vigente no momento do pagamento, e cada lote pode virar sem aviso quando esgotar.</p>
+
+      <h3>2. Entrega do ingresso</h3>
+      <p>Depois da confirmação do pagamento, o ingresso é enviado por e-mail ou WhatsApp, normalmente em poucos minutos. Se não receber, fale com o nosso suporte.</p>
+
+      <h3>3. Meia-entrada</h3>
+      <p>A meia-entrada segue a Lei 12.933/2013 e as regras de cada evento. Na entrada, o comprovante do benefício pode ser exigido junto com um documento com foto.</p>
+
+      <h3>4. Direito de arrependimento</h3>
+      <p>Em compras feitas pela internet, você pode desistir em até 7 dias após a compra (art. 49 do Código de Defesa do Consumidor), desde que o pedido seja feito antes da data do evento. O valor é devolvido pelo mesmo meio de pagamento.</p>
+
+      <h3>5. Cancelamento ou adiamento do evento</h3>
+      <p>Se o evento for cancelado pelo produtor, o valor do ingresso é reembolsado. Se for adiado, o ingresso continua válido para a nova data ou, se preferir, você pode pedir o reembolso dentro do prazo informado pelo produtor.</p>
+
+      <h3>6. Troca de titularidade</h3>
+      <p>A troca de titularidade depende das regras de cada evento e da plataforma emissora. Fale com a gente para verificar.</p>
+    </section>
+
+    <div class="ajuda">
+      <h2>Ficou com alguma dúvida?</h2>
+      <p>Fale com a nossa equipe. Atendimento humano, direto no WhatsApp.</p>
+      <a class="btn" id="btn-ajuda" target="_blank" rel="noopener" href="https://wa.me/5511976892592">Falar com a Flow</a>
+    </div>
+  </main>
+
+  <footer>© 2026 Flow Tickets · Todos os direitos reservados</footer>
+
+  <script src="eventos.js?v=20260923b"></script>
+  <script>
+    try { document.getElementById('btn-ajuda').href = flowLinkContato('🎟️ Olá! Tenho uma dúvida sobre as políticas da Flow.'); } catch (e) {}
+  </script>
+</body>
+</html>

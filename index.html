@@ -675,24 +675,123 @@
     }
     .dif .icone svg { width: 24px; height: 24px; stroke: var(--branco); }
     .dif h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
-    .dif p { font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.68); }
+    .dif { display: flex; flex-direction: column; }
+    .dif p { font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.68); margin-bottom: 22px; }
+    .dif-cta {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      color: var(--branco);
+      text-decoration: none;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 122, 26, 0.7);
+    }
+    .dif-cta svg { width: 14px; height: 14px; transition: transform 0.2s ease; }
+    .dif-cta:hover { color: var(--laranja); }
+    .dif-cta:hover svg { transform: translateX(3px); }
 
-    /* ===== Rodapé (escuro) ===== */
-    footer {
-      padding: 40px 48px;
+    section[id] { scroll-margin-top: 64px; }
+
+    /* ===== Suporte ===== */
+    .suporte { padding: 90px 24px; background: var(--fundo); }
+    .suporte .caixa {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: 28px;
+      padding: 56px;
+    }
+    .suporte .rotulo {
+      font-size: 12px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--magenta); margin-bottom: 14px;
+    }
+    .suporte h2 {
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 900;
+      font-stretch: 125%;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .suporte .texto { font-size: 17px; line-height: 1.6; color: var(--tinta-2); margin-bottom: 28px; max-width: 460px; }
+    .btn-whats { display: inline-flex; align-items: center; gap: 12px; }
+    .btn-whats svg { width: 20px; height: 20px; }
+    .suporte-atalhos { display: flex; flex-direction: column; gap: 12px; }
+    .suporte-atalhos .titulo {
+      font-size: 12px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--tinta-2); margin-bottom: 2px;
+    }
+    .atalho {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
       gap: 16px;
+      padding: 18px 22px;
+      border-radius: 16px;
+      border: 1px solid var(--borda);
+      background: var(--fundo);
+      color: var(--tinta);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .atalho svg { width: 18px; height: 18px; flex: 0 0 auto; color: var(--magenta); transition: transform 0.2s ease; }
+    .atalho:hover { border-color: var(--magenta); }
+    .atalho:hover svg { transform: translateX(3px); }
+
+    /* ===== Rodapé (escuro) ===== */
+    footer {
       background: var(--preto);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.6);
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.55);
+      padding: 64px 48px 28px;
     }
-    footer .redes { display: flex; gap: 20px; }
-    footer .redes a { color: var(--branco); text-decoration: none; font-weight: 600; }
-    footer .redes a:hover { color: #ff5c8a; }
+    .rodape-grade {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+    .rodape-marca .logo-texto {
+      font-weight: 900; font-stretch: 125%; font-size: 26px; letter-spacing: 1px; color: var(--branco);
+    }
+    .rodape-marca .logo-texto .ponto { font-style: normal; color: var(--magenta); }
+    .rodape-marca p { margin: 14px 0 20px; line-height: 1.6; max-width: 280px; }
+    .rodape-marca .redes-topo { gap: 10px; }
+    footer h4 {
+      font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--branco); margin-bottom: 16px;
+    }
+    footer ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    footer ul a { color: rgba(255, 255, 255, 0.6); text-decoration: none; }
+    footer ul a:hover { color: #ff5c8a; }
+    .rodape-base {
+      max-width: 1200px;
+      margin: 48px auto 0;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+    }
 
     /* Card clicável (abre a tela de detalhe) */
     .card { cursor: pointer; }
@@ -928,6 +1027,11 @@
     .btn-comprar-grande.pix .tag-pix { color: #12a693; font-size: 11px; font-weight: 800; }
 
     .modal-obs { text-align: center; font-size: 12px; color: var(--tinta-2); margin-top: 14px; }
+    .modal-seguro { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .modal-seguro svg { width: 13px; height: 13px; color: #12a693; }
+    .modal-duvida { text-align: center; font-size: 13px; color: var(--tinta-2); margin-top: 10px; }
+    .modal-duvida a { color: var(--magenta); font-weight: 700; text-decoration: none; }
+    .modal-duvida a:hover { text-decoration: underline; }
 
     @media (max-width: 720px) {
       .modal { margin: 0; border-radius: 0; min-height: 100%; border: none; }
@@ -999,7 +1103,13 @@
       .sobre { padding: 64px 20px; }
       .sobre .texto { margin-bottom: 44px; }
 
-      footer { flex-direction: column; align-items: flex-start; padding: 32px 20px; }
+      footer { padding: 48px 20px 24px; }
+      .rodape-grade { grid-template-columns: 1fr 1fr; gap: 32px 20px; }
+      .rodape-marca { grid-column: 1 / -1; }
+      .suporte { padding: 56px 16px; }
+      .suporte .caixa { grid-template-columns: 1fr; gap: 32px; padding: 32px 22px; border-radius: 22px; }
+      .suporte .btn-whats { width: 100%; justify-content: center; padding: 16px 18px; font-size: 13px; letter-spacing: 1.5px; }
+      section[id] { scroll-margin-top: 100px; }
     }
   </style>
 </head>
@@ -1017,12 +1127,13 @@
       <a href="#eventos">Eventos</a>
       <a class="so-desktop" href="#eventos">Categorias</a>
       <a href="#sobre">Sobre</a>
+      <a class="so-desktop" href="#suporte">Suporte</a>
     </nav>
     <div class="redes-topo">
       <a href="https://instagram.com/flowticketss" target="_blank" rel="noopener" aria-label="Instagram da Flow Tickets" title="Instagram">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="0.6" fill="currentColor" stroke="none"/></svg>
       </a>
-      <a href="https://wa.me/5511976892592?text=%F0%9F%8E%9F%EF%B8%8F%20Ol%C3%A1!%20Vim%20pelo%20site%20da%20Flow%20Tickets." target="_blank" rel="noopener" aria-label="WhatsApp da Flow Tickets" title="WhatsApp">
+      <a href="https://wa.me/5511976892592?text=%F0%9F%8E%9F%EF%B8%8F%20Ol%C3%A1!%20Vim%20pelo%20site%20da%20Flow%20Tickets." target="_blank" rel="noopener" aria-label="WhatsApp da Flow Tickets" title="WhatsApp" data-msg="atendimento">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.45 9.45 0 0 1-4.82-1.32l-.35-.21-3.58.94.96-3.49-.23-.36a9.43 9.43 0 0 1-1.45-5.03c0-5.21 4.25-9.46 9.48-9.46 2.53 0 4.9.99 6.69 2.78a9.4 9.4 0 0 1 2.77 6.69c0 5.22-4.25 9.46-9.46 9.46zm8.06-17.52A11.33 11.33 0 0 0 12.04.64C5.76.64.65 5.75.65 12.03c0 2.01.52 3.97 1.52 5.69L.55 23.36l5.78-1.52a11.36 11.36 0 0 0 5.71 1.46h.01c6.28 0 11.39-5.11 11.39-11.39 0-3.04-1.18-5.9-3.34-8.05z"/></svg>
       </a>
     </div>
@@ -1075,12 +1186,12 @@
       <div class="cta-bloco">
         <h2>Produz eventos?</h2>
         <p>Venda seus ingressos com a Flow e distribua entretenimento em escala.</p>
-        <a class="btn btn-primario" href="#">Quero vender com a Flow</a>
+        <a class="btn btn-primario" target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg-texto="🎟️ Olá! Produzo eventos e quero vender meus ingressos com a Flow.">Quero vender com a Flow</a>
       </div>
       <div class="cta-bloco">
         <h2>Quer ser promoter?</h2>
         <p>Divulgue as festas, traga a sua galera e ganhe por indicação com a Flow.</p>
-        <a class="btn btn-primario" target="_blank" rel="noopener" href="https://wa.me/5511976892592?text=%F0%9F%9A%80%20Ol%C3%A1!%20Quero%20ser%20promoter%20da%20Flow%20Tickets.">Quero ser promoter</a>
+        <a class="btn btn-primario" target="_blank" rel="noopener" href="https://wa.me/5511976892592?text=%F0%9F%9A%80%20Ol%C3%A1!%20Quero%20ser%20promoter%20da%20Flow%20Tickets." data-msg-texto="🚀 Olá! Quero ser promoter da Flow Tickets.">Quero ser promoter</a>
       </div>
     </div>
   </section>
@@ -1098,6 +1209,7 @@
           </div>
           <h3>Atendimento humano, direto no WhatsApp</h3>
           <p>Nada de robô ou fila de e-mail: da compra ao dia do evento, você fala com gente de verdade e resolve na hora.</p>
+          <a class="dif-cta" href="https://wa.me/5511976892592" target="_blank" rel="noopener" data-msg="atendimento">Falar com atendimento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
         </div>
         <div class="dif">
           <div class="icone">
@@ -1105,13 +1217,15 @@
           </div>
           <h3>Curadoria de verdade</h3>
           <p>Não somos um catálogo infinito: selecionamos as festas e experiências que realmente valem a sua noite.</p>
+          <a class="dif-cta" href="#eventos">Ver a curadoria <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
         </div>
         <div class="dif">
           <div class="icone">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
           </div>
           <h3>Compra segura, sem golpe</h3>
-          <p>Cada ingresso é verificado antes de chegar até você. Transparência até no que está esgotado.</p>
+          <p>Cada ingresso é verificado antes de chegar até você e seus dados ficam protegidos. Transparência até no que está esgotado.</p>
+          <a class="dif-cta" href="#eventos">Comprar ingresso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
         </div>
         <div class="dif">
           <div class="icone">
@@ -1119,7 +1233,25 @@
           </div>
           <h3>Confirmou, chegou</h3>
           <p>Seu ingresso cai no e-mail em minutos após a confirmação. Sem espera, sem ansiedade.</p>
+          <a class="dif-cta" href="#suporte">Precisa de ajuda? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="suporte" id="suporte">
+    <div class="caixa">
+      <div>
+        <div class="rotulo">Suporte</div>
+        <h2>Precisa de ajuda?</h2>
+        <p class="texto">Estamos aqui para te ajudar. Fale com o nosso suporte pelo WhatsApp: atendimento humano, do pedido ao dia do evento.</p>
+        <a class="btn btn-primario btn-whats" target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg="compra"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.45 9.45 0 0 1-4.82-1.32l-.35-.21-3.58.94.96-3.49-.23-.36a9.43 9.43 0 0 1-1.45-5.03c0-5.21 4.25-9.46 9.48-9.46 2.53 0 4.9.99 6.69 2.78a9.4 9.4 0 0 1 2.77 6.69c0 5.22-4.25 9.46-9.46 9.46zm8.06-17.52A11.33 11.33 0 0 0 12.04.64C5.76.64.65 5.75.65 12.03c0 2.01.52 3.97 1.52 5.69L.55 23.36l5.78-1.52a11.36 11.36 0 0 0 5.71 1.46h.01c6.28 0 11.39-5.11 11.39-11.39 0-3.04-1.18-5.9-3.34-8.05z"/></svg> Falar pelo WhatsApp</a>
+      </div>
+      <div class="suporte-atalhos">
+        <div class="titulo">Atalhos com mensagem pronta</div>
+        <a class="atalho" target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg="compra">Ajuda com uma compra ou ingresso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <a class="atalho" target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg="recebimento">Ainda não recebi meu ingresso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <a class="atalho" target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg="evento">Dúvida sobre um evento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
       </div>
     </div>
   </section>
@@ -1127,15 +1259,53 @@
   <div class="modal-fundo" id="modal-detalhe" role="dialog" aria-modal="true"></div>
 
   <footer>
-    <div>© 2026 Flow Tickets · Todos os direitos reservados</div>
-    <div class="redes">
-      <a target="_blank" href="https://instagram.com/flowticketss">Instagram</a>
-      <a target="_blank" href="https://wa.me/5511976892592">WhatsApp</a>
+    <div class="rodape-grade">
+      <div class="rodape-marca">
+        <span class="logo-texto">FLOW<i class="ponto">.</i></span>
+        <p>Máquina de distribuição para entretenimento. Os melhores eventos, com atendimento humano do começo ao fim.</p>
+        <div class="redes-topo">
+      <a href="https://instagram.com/flowticketss" target="_blank" rel="noopener" aria-label="Instagram da Flow Tickets" title="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="0.6" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://wa.me/5511976892592?text=%F0%9F%8E%9F%EF%B8%8F%20Ol%C3%A1!%20Vim%20pelo%20site%20da%20Flow%20Tickets." target="_blank" rel="noopener" aria-label="WhatsApp da Flow Tickets" title="WhatsApp" data-msg="atendimento">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.45 9.45 0 0 1-4.82-1.32l-.35-.21-3.58.94.96-3.49-.23-.36a9.43 9.43 0 0 1-1.45-5.03c0-5.21 4.25-9.46 9.48-9.46 2.53 0 4.9.99 6.69 2.78a9.4 9.4 0 0 1 2.77 6.69c0 5.22-4.25 9.46-9.46 9.46zm8.06-17.52A11.33 11.33 0 0 0 12.04.64C5.76.64.65 5.75.65 12.03c0 2.01.52 3.97 1.52 5.69L.55 23.36l5.78-1.52a11.36 11.36 0 0 0 5.71 1.46h.01c6.28 0 11.39-5.11 11.39-11.39 0-3.04-1.18-5.9-3.34-8.05z"/></svg>
+      </a>
+    </div>
+      </div>
+      <div>
+        <h4>Atendimento</h4>
+        <ul>
+          <li><a target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg="atendimento">WhatsApp</a></li>
+          <li><a target="_blank" rel="noopener" href="https://instagram.com/flowticketss">Instagram</a></li>
+          <li><a href="#suporte">Suporte</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Flow</h4>
+        <ul>
+          <li><a href="#eventos">Eventos</a></li>
+          <li><a href="#sobre">Sobre nós</a></li>
+          <li><a target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg-texto="🎟️ Olá! Produzo eventos e quero vender meus ingressos com a Flow.">Venda com a Flow</a></li>
+          <li><a target="_blank" rel="noopener" href="https://wa.me/5511976892592" data-msg-texto="🚀 Olá! Quero ser promoter da Flow Tickets.">Seja promoter</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Políticas</h4>
+        <ul>
+          <li><a href="politicas.html#termos">Termos de Uso</a></li>
+          <li><a href="politicas.html#privacidade">Política de Privacidade</a></li>
+          <li><a href="politicas.html#compra">Compra e cancelamento</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="rodape-base">
+      <span>© 2026 Flow Tickets · Todos os direitos reservados</span>
+      <span>Good people, better nights.</span>
     </div>
   </footer>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260923"></script>
+  <script src="eventos.js?v=20260923b"></script>
   <script>
     (function () {
       var grade  = document.querySelector('.eventos .grade');
@@ -1283,8 +1453,19 @@
               '<span class="rotulo">Comprar no Pix <span class="tag-pix">sem taxa</span></span>' +
             '</a>' +
 
-            '<div class="modal-obs">Você fecha a compra direto com a nossa equipe no WhatsApp.</div>';
+            '<div class="modal-obs modal-seguro">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>' +
+              'Compra segura e dados protegidos. Você fecha direto com a nossa equipe.' +
+            '</div>';
         }
+        compraHtml +=
+          '<div class="modal-duvida">Ficou com alguma dúvida? ' +
+            '<a target="_blank" rel="noopener" href="' +
+              esc('https://wa.me/' + flowNumeroDoEvento(ev) + '?text=' + encodeURIComponent(
+                '🎟️ Olá! Tenho uma dúvida sobre o evento ' + ev.nome + '.' +
+                (flowPromoterAtual() ? '\n(Indicação: ' + flowPromoterAtual() + ')' : ''))) +
+            '">Falar com a Flow</a>' +
+          '</div>';
 
         // Chips (tipos / classificação)
         var chips = '';
@@ -1381,6 +1562,15 @@
         filtrar(ativoBtn ? ativoBtn.dataset.cat : 'todos');
       }
 
+      // Botões de atendimento/suporte: número principal + mensagem pronta.
+      function atualizarLinksContato() {
+        document.querySelectorAll('[data-msg], [data-msg-texto]').forEach(function (a) {
+          var msg = a.dataset.msgTexto || FLOW_MSG_SUPORTE[a.dataset.msg];
+          if (msg) a.href = flowLinkContato(msg);
+        });
+      }
+      atualizarLinksContato();
+
       renderizarGrade(flowCarregarEventos());
 
       if (window.FlowCloud && FlowCloud.ativo()) {
@@ -1388,6 +1578,7 @@
           if (dados && dados.eventos) {
             flowSalvarEventos(dados.eventos);
             if (dados.config) flowSalvarConfig(dados.config);
+            atualizarLinksContato();
             renderizarGrade(dados.eventos);
           }
         }).catch(function (e) { console.warn('Nuvem indisponivel:', e); });
