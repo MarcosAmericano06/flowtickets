@@ -100,6 +100,7 @@
     .campo label { font-size: 13px; font-weight: 700; color: var(--cinza-claro); }
     .campo label small { font-weight: 400; color: rgba(255,255,255,0.45); }
     .campo input[type="text"],
+    .campo input[type="date"],
     .campo select,
     .campo textarea {
       background: rgba(0, 0, 0, 0.3);
@@ -124,6 +125,17 @@
     }
     .checkbox input { width: 18px; height: 18px; accent-color: var(--magenta); }
     .checkbox label { font-size: 15px; }
+    .campo input[type="date"] { color-scheme: dark; }
+    .cats-grupo { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cats-grupo label {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px; border-radius: 999px; cursor: pointer;
+      background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 14px; font-weight: 600; color: var(--branco);
+    }
+    .cats-grupo label:has(input:checked) { border-color: var(--magenta); background: rgba(255, 38, 104, 0.15); }
+    .cats-grupo input { width: 16px; height: 16px; accent-color: var(--magenta); }
+    .cats-auto { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
 
     .acoes-form { grid-column: 1 / -1; display: flex; gap: 12px; flex-wrap: wrap; }
     .btn {
@@ -357,6 +369,10 @@
         <input type="text" id="f-data" required placeholder="Ex.: Sáb · 25 Jul · 22h às 6h">
       </div>
       <div class="campo">
+        <label for="f-data-iso">Dia do evento <small>(calendário — organiza “Essa semana” e “Semana que vem”)</small></label>
+        <input type="date" id="f-data-iso">
+      </div>
+      <div class="campo">
         <label for="f-local">Local <small>(opcional)</small></label>
         <input type="text" id="f-local" placeholder="Ex.: Hangar Campo de Marte">
       </div>
@@ -364,16 +380,17 @@
         <label for="f-cidade">Cidade</label>
         <input type="text" id="f-cidade" value="São Paulo · SP">
       </div>
-      <div class="campo">
-        <label for="f-categoria">Categoria (filtro do site)</label>
-        <select id="f-categoria">
-          <option value="essa-semana">Essa Semana</option>
-          <option value="semana-que-vem">Semana Que Vem</option>
-          <option value="proximas" selected>Próximas festas</option>
-          <option value="reveillon">Réveillon</option>
-          <option value="carnaval">Carnaval</option>
-          <option value="universitarias">Festas Universitárias</option>
-        </select>
+      <div class="campo largo">
+        <label>Categorias <small>(marque quantas quiser — o evento aparece em todas)</small></label>
+        <div class="cats-grupo" id="f-categorias">
+          <label><input type="checkbox" value="eletronica"> Eletrônica</label>
+          <label><input type="checkbox" value="labels"> Labels</label>
+          <label><input type="checkbox" value="universitarias"> Festas Universitárias</label>
+          <label><input type="checkbox" value="reveillon"> Réveillon</label>
+          <label><input type="checkbox" value="carnaval"> Carnaval</label>
+          <label><input type="checkbox" value="proximas"> Próximas festas</label>
+        </div>
+        <div class="cats-auto" id="f-cats-auto">“Essa semana” e “Semana que vem” são automáticas, pela data do evento.</div>
       </div>
       <div class="campo">
         <label for="f-tipos">Tipos de ingresso <small>(separe com ·)</small></label>
@@ -506,7 +523,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260907"></script>
+  <script src="eventos.js?v=20260922"></script>
   <script>
     (function () {
       var eventos = flowCarregarEventos();
@@ -585,7 +602,9 @@
           nome.textContent = ev.nome;
           var meta = document.createElement('div');
           meta.className = 'meta';
-          meta.textContent = ev.data + '  ·  ' + (FLOW_CATEGORIAS[ev.categoria] || ev.categoria);
+          meta.textContent = ev.data + '  ·  ' + flowCategoriasDoEvento(ev).map(function (c) {
+            return FLOW_CATEGORIAS[c] || c;
+          }).join(', ');
           dados.appendChild(nome);
           dados.appendChild(meta);
           item.appendChild(dados);
@@ -691,7 +710,9 @@
           data: $('f-data').value.trim(),
           local: $('f-local').value.trim(),
           cidade: $('f-cidade').value.trim() || 'São Paulo · SP',
-          categoria: $('f-categoria').value,
+          dataISO: $('f-data-iso').value,
+          categorias: lerCategorias(),
+          categoria: lerCategorias()[0] || 'proximas',
           tipos: $('f-tipos').value.trim(),
           labels: $('f-labels').value.trim(),
           preco: $('f-preco').value.trim(),
@@ -710,12 +731,42 @@
         };
       }
 
+      function lerCategorias() {
+        return Array.prototype.map.call(
+          document.querySelectorAll('#f-categorias input:checked'),
+          function (c) { return c.value; });
+      }
+
+      function marcarCategorias(lista, somar) {
+        document.querySelectorAll('#f-categorias input').forEach(function (c) {
+          if (lista.indexOf(c.value) !== -1) c.checked = true;
+          else if (!somar) c.checked = false;
+        });
+        mostrarCatsAuto();
+      }
+
+      // Prévia: em qual período automático o evento vai cair hoje.
+      function mostrarCatsAuto() {
+        var cats = flowCategoriasDoEvento({ data: $('f-data').value, dataISO: $('f-data-iso').value });
+        var p = flowPeriodoEvento({ data: $('f-data').value, dataISO: $('f-data-iso').value });
+        var txt = '“Essa semana” e “Semana que vem” são automáticas, pela data do evento.';
+        if (cats.indexOf('essa-semana') !== -1) txt += ' Hoje ele aparece em: Essa semana.';
+        else if (cats.indexOf('semana-que-vem') !== -1) txt += ' Hoje ele aparece em: Semana que vem.';
+        else if (p && p.fim < flowHoje()) txt += ' Esta data já passou.';
+        else if (!p && $('f-data').value) txt += ' ⚠️ Não entendemos a data — escolha o dia no calendário.';
+        $('f-cats-auto').textContent = txt;
+      }
+      ['f-data', 'f-data-iso'].forEach(function (id) {
+        $(id).addEventListener('input', mostrarCatsAuto);
+      });
+
       function preencherFormulario(ev) {
         $('f-nome').value = ev.nome || '';
         $('f-data').value = ev.data || '';
         $('f-local').value = ev.local || '';
         $('f-cidade').value = ev.cidade || 'São Paulo · SP';
-        $('f-categoria').value = ev.categoria || 'proximas';
+        $('f-data-iso').value = ev.dataISO || '';
+        marcarCategorias(flowCategoriasManuais(ev));
         $('f-tipos').value = ev.tipos || '';
         $('f-labels').value = ev.labels || '';
         $('f-preco').value = ev.preco || '';
@@ -747,6 +798,7 @@
       function cancelarEdicao() {
         editandoId = null;
         form.reset();
+        mostrarCatsAuto();
         $('f-cidade').value = 'São Paulo · SP';
         document.getElementById('titulo-form').textContent = 'Adicionar evento';
         $('btn-salvar').textContent = 'Adicionar evento';
@@ -1029,18 +1081,14 @@
         return '';
       }
 
-      // Escolhe o filtro do site a partir da data do evento.
+      // Sugere uma categoria a partir do mês (Essa semana / Semana que vem
+      // já saem sozinhas da data, não precisam ser marcadas).
       function categoriaPorData(iso) {
         var m = String(iso).match(/(\d{4})-(\d{2})-(\d{2})/);
         if (!m) return null;
-        var alvo = Date.UTC(+m[1], +m[2] - 1, +m[3]);
-        var hoje = new Date();
-        var dias = Math.round((alvo - Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())) / 86400000);
         if (+m[2] === 12) return 'reveillon';
         if (+m[2] === 2) return 'carnaval';
-        if (dias >= 0 && dias <= 7) return 'essa-semana';
-        if (dias > 7 && dias <= 14) return 'semana-que-vem';
-        return 'proximas';
+        return null;
       }
 
       // "...Jardim ..., Botucatu, SP" -> "Botucatu · SP"
@@ -1081,6 +1129,7 @@
           if (evento.startDate) {
             out.data = formatarData(evento.startDate);
             out.categoria = categoriaPorData(evento.startDate);
+            out.dataISO = String(evento.startDate).slice(0, 10);
           }
           out.imagem = typeof evento.image === 'string' ? evento.image
                      : (evento.image && (evento.image.url || evento.image[0])) || '';
@@ -1241,7 +1290,7 @@
           // se a base não trouxe nome/data, tenta os mesmos dados na página de ingressos
           if ((!d.nome || !d.data) && res[1]) {
             var d2 = extrairDados(res[1]);
-            ['nome', 'data', 'local', 'cidade', 'imagem', 'descricao', 'categoria'].forEach(function (k) {
+            ['nome', 'data', 'dataISO', 'local', 'cidade', 'imagem', 'descricao', 'categoria'].forEach(function (k) {
               if (!d[k] && d2[k]) d[k] = d2[k];
             });
           }
@@ -1256,7 +1305,9 @@
           if (d.data) $('f-data').value = d.data;
           if (d.local) $('f-local').value = d.local;
           if (d.cidade) $('f-cidade').value = d.cidade;
-          if (d.categoria) $('f-categoria').value = d.categoria;
+          if (d.dataISO) $('f-data-iso').value = d.dataISO;
+          if (d.categoria) marcarCategorias([d.categoria], true);
+          mostrarCatsAuto();
           if (d.imagem) $('f-imagem').value = d.imagem;
           if (descricao) $('f-descricao').value = descricao;
           if (det.lineup) $('f-lineup').value = det.lineup;

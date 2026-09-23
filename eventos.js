@@ -180,8 +180,104 @@ var FLOW_CATEGORIAS = {
   'proximas':       'Próximas festas',
   'reveillon':      'Réveillon',
   'carnaval':       'Carnaval',
-  'universitarias': 'Festas Universitárias'
+  'universitarias': 'Festas Universitárias',
+  'eletronica':     'Eletrônica',
+  'labels':         'Labels'
 };
+
+// ===== Categorias automáticas por data ======================================
+// "Essa semana" e "Semana que vem" NÃO são cadastradas à mão: saem da data do
+// evento, recalculadas toda vez que a página abre. Semana = segunda a domingo.
+// A data vem do campo `dataISO` (AAAA-MM-DD, escolhido no calendário do painel);
+// se ele estiver vazio, tentamos ler o texto livre de `data`
+// ("Sex · 25 Set · 23h", "3 de outubro de 2026", "27, 28 e 31 de dezembro"...).
+
+var FLOW_CATS_AUTOMATICAS = ['essa-semana', 'semana-que-vem'];
+var FLOW_MESES_ABREV = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+function flowHoje() {
+  var d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+// Lê a data do texto livre. Retorna { inicio, fim } (Date à meia-noite) ou null.
+function flowLerDataTexto(txt, hoje) {
+  if (!txt) return null;
+  hoje = hoje || flowHoje();
+  var s = String(txt).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  var anoSolto = (s.match(/\b(20\d{2})\b/) || [])[1];
+  var datas = [];
+
+  function adicionar(dia, mes, ano) {
+    var semAno = !ano;
+    ano = ano ? +ano : (anoSolto ? +anoSolto : hoje.getFullYear());
+    var d = new Date(ano, mes - 1, dia);
+    if (d.getMonth() !== mes - 1) return; // dia inválido (ex.: 31 Set)
+    // Sem ano escrito e já passou há mais de 6 meses? Então é do ano que vem.
+    if (semAno && !anoSolto && (hoje - d) > 182 * 86400000) d = new Date(ano + 1, mes - 1, dia);
+    datas.push(d);
+  }
+
+  // "27, 28 e 31 de dezembro de 2026", "Sex · 25 Set", "6 a 9 Fev"
+  var re = /\b((?:\d{1,2}\s*(?:,|e|a|-|–)\s*)*\d{1,2})\s*(?:de\s+)?(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*\.?(?:\s*(?:de\s+)?(\d{4}))?/g;
+  var m;
+  while ((m = re.exec(s))) {
+    var mes = FLOW_MESES_ABREV.indexOf(m[2]) + 1;
+    m[1].match(/\d{1,2}/g).forEach(function (dia) { adicionar(+dia, mes, m[3]); });
+  }
+  // "25/09" ou "25/09/2026"
+  if (!datas.length) {
+    var re2 = /\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/g;
+    while ((m = re2.exec(s))) {
+      var a = m[3] ? (m[3].length === 2 ? '20' + m[3] : m[3]) : null;
+      if (+m[2] >= 1 && +m[2] <= 12) adicionar(+m[1], +m[2], a);
+    }
+  }
+  if (!datas.length) return null;
+  datas.sort(function (x, y) { return x - y; });
+  return { inicio: datas[0], fim: datas[datas.length - 1] };
+}
+
+// Período do evento: { inicio, fim } ou null se não der para saber a data.
+function flowPeriodoEvento(ev, hoje) {
+  var m = String(ev.dataISO || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) {
+    var d = new Date(+m[1], +m[2] - 1, +m[3]);
+    return { inicio: d, fim: d };
+  }
+  return flowLerDataTexto(ev.data, hoje);
+}
+
+// Categorias escolhidas no painel. Compatível com eventos antigos, que só
+// tinham `categoria` (uma só). As automáticas de data são ignoradas aqui.
+function flowCategoriasManuais(ev) {
+  var lista = Array.isArray(ev.categorias) ? ev.categorias : (ev.categoria ? [ev.categoria] : []);
+  return lista.filter(function (c, i) {
+    return c && FLOW_CATS_AUTOMATICAS.indexOf(c) === -1 && lista.indexOf(c) === i;
+  });
+}
+
+// Todas as categorias em que o evento aparece no site (manuais + automáticas).
+function flowCategoriasDoEvento(ev, hoje) {
+  hoje = hoje || flowHoje();
+  var cats = flowCategoriasManuais(ev);
+
+  // Label/tipo "Eletrônico(a)" já coloca o evento em Eletrônica.
+  if (cats.indexOf('eletronica') === -1 && /eletr[oô]nic/i.test((ev.labels || '') + ' ' + (ev.tipos || ''))) {
+    cats.push('eletronica');
+  }
+
+  var p = flowPeriodoEvento(ev, hoje);
+  if (p && p.fim >= hoje) {
+    var diaSemana = (hoje.getDay() + 6) % 7; // 0 = segunda
+    var domingo = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + (6 - diaSemana));
+    var proxSegunda = new Date(domingo.getFullYear(), domingo.getMonth(), domingo.getDate() + 1);
+    var proxDomingo = new Date(domingo.getFullYear(), domingo.getMonth(), domingo.getDate() + 7);
+    if (p.inicio <= domingo) cats.push('essa-semana');
+    if (p.inicio <= proxDomingo && p.fim >= proxSegunda) cats.push('semana-que-vem');
+  }
+  return cats;
+}
 
 function flowCarregarEventos() {
   try {
