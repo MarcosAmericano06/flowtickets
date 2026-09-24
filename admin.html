@@ -433,6 +433,10 @@
         <input type="text" id="f-link-compra" placeholder="https://... (link da plataforma de venda)">
       </div>
       <div class="campo largo">
+        <label for="f-comunidade">Link da comunidade oficial <small>(grupo do WhatsApp/Telegram desta festa ou label — se ficar vazio, o botão "Entrar na comunidade" não aparece)</small></label>
+        <input type="text" id="f-comunidade" placeholder="https://chat.whatsapp.com/...">
+      </div>
+      <div class="campo largo">
         <label for="f-lineup">Line-up / atrações <small>(opcional)</small></label>
         <input type="text" id="f-lineup" placeholder="Ex.: DJ Fulano, Banda Ciclano, MC Beltrano">
       </div>
@@ -523,7 +527,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260923b"></script>
+  <script src="eventos.js?v=20260924"></script>
   <script>
     (function () {
       var eventos = flowCarregarEventos();
@@ -722,6 +726,7 @@
           esgotado: $('f-esgotado').checked,
           imagem: $('f-imagem').value.trim(),
           linkCompra: $('f-link-compra').value.trim(),
+          comunidade: normalizarLink($('f-comunidade').value),
           lineup: $('f-lineup').value.trim(),
           regras: $('f-regras').value.trim(),
           descricao: $('f-descricao').value.trim(),
@@ -729,6 +734,13 @@
           origem: $('f-origem').value.trim(),
           msg: $('f-msg').value.trim()
         };
+      }
+
+      // "chat.whatsapp.com/abc" -> "https://chat.whatsapp.com/abc"
+      function normalizarLink(v) {
+        v = String(v || '').trim();
+        if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
+        return v;
       }
 
       function lerCategorias() {
@@ -776,6 +788,7 @@
         $('f-esgotado').checked = !!ev.esgotado;
         $('f-imagem').value = ev.imagem || '';
         $('f-link-compra').value = ev.linkCompra || '';
+        $('f-comunidade').value = ev.comunidade || '';
         $('f-lineup').value = ev.lineup || '';
         $('f-regras').value = ev.regras || '';
         $('f-descricao').value = ev.descricao || '';

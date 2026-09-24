@@ -152,9 +152,9 @@
       min-height: min(88vh, 820px);
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: safe center;
       padding: 96px 64px 150px;
-      background: url('flow-capa.jpg') center 24% / cover no-repeat, var(--preto);
+      background: url('flow-capa-desktop.jpg') 78% 40% / cover no-repeat, var(--preto);
       color: var(--branco);
       overflow: hidden;
     }
@@ -189,7 +189,7 @@
     }
 
     .hero h1 {
-      font-size: clamp(46px, 6.6vw, 96px);
+      font-size: clamp(44px, min(6.6vw, 10.5vh), 96px);
       font-weight: 900;
       font-stretch: 125%;
       text-transform: uppercase;
@@ -566,6 +566,7 @@
       color: var(--tinta-2);
       padding: 40px 0;
     }
+    .vazio-texto { max-width: 460px; margin: 0 auto 24px; line-height: 1.6; }
     .vazio[hidden] { display: none; }
 
     /* ===== Chamada final (faixa escura de marca) ===== */
@@ -1026,6 +1027,24 @@
     }
     .btn-comprar-grande.pix .tag-pix { color: #12a693; font-size: 11px; font-weight: 800; }
 
+    /* Botão 3 — comunidade oficial do evento */
+    .btn-comprar-grande.comunidade {
+      background: var(--preto);
+      border: 1px solid var(--preto);
+      justify-content: flex-start;
+      gap: 14px;
+    }
+    .btn-comprar-grande.comunidade > svg { width: 22px; height: 22px; flex: 0 0 auto; color: var(--laranja); }
+    .btn-comprar-grande.comunidade .textos { display: flex; flex-direction: column; gap: 3px; flex: 1; text-align: left; }
+    .btn-comprar-grande.comunidade .sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.62);
+    }
+    .btn-comprar-grande.comunidade .sub b { color: var(--laranja); font-weight: 800; }
+    .btn-comprar-grande.comunidade .seta { width: 18px; height: 18px; flex: 0 0 auto; color: rgba(255,255,255,0.7); transition: transform 0.2s ease; }
+    .btn-comprar-grande.comunidade:hover .seta { transform: translateX(3px); }
+
     .modal-obs { text-align: center; font-size: 12px; color: var(--tinta-2); margin-top: 14px; }
     .modal-seguro { display: flex; align-items: center; justify-content: center; gap: 6px; }
     .modal-seguro svg { width: 13px; height: 13px; color: #12a693; }
@@ -1057,6 +1076,7 @@
         min-height: calc(100svh - 117px);
         justify-content: flex-start;
         padding: 44px 24px 190px;
+        background-image: url('flow-capa-mobile.jpg');
         background-size: auto 125%;
         background-position: 80% 30%;
       }
@@ -1165,9 +1185,9 @@
     <button data-cat="semana-que-vem">Semana Que Vem</button>
     <button data-cat="eletronica">Eletrônica</button>
     <button data-cat="labels">Labels</button>
-    <button data-cat="reveillon">Réveillon</button>
-    <button data-cat="carnaval">Carnaval</button>
-    <button data-cat="universitarias">Festas Universitárias</button>
+    <button data-cat="reveillon" data-sempre>Réveillon</button>
+    <button data-cat="carnaval" data-sempre>Carnaval</button>
+    <button data-cat="universitarias" data-sempre>Festas Universitárias</button>
     <button class="ativo" data-cat="todos">Ver Mais</button>
   </div>
 
@@ -1178,7 +1198,10 @@
   <section class="eventos" id="eventos">
     <h2>Em destaque</h2>
     <div class="grade"></div>
-    <p class="vazio" hidden>Nenhum evento nesta categoria por enquanto.</p>
+    <div class="vazio" hidden>
+      <p class="vazio-texto">Nenhum evento nesta categoria por enquanto.</p>
+      <a class="btn btn-primario" id="vazio-avisar" target="_blank" rel="noopener" href="https://wa.me/5511976892592">Quero ser avisado</a>
+    </div>
   </section>
 
   <section class="cta-final">
@@ -1305,7 +1328,7 @@
   </footer>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260923b"></script>
+  <script src="eventos.js?v=20260924"></script>
   <script>
     (function () {
       var grade  = document.querySelector('.eventos .grade');
@@ -1458,6 +1481,22 @@
               'Compra segura e dados protegidos. Você fecha direto com a nossa equipe.' +
             '</div>';
         }
+        // Comunidade oficial do evento: só aparece se tiver link cadastrado.
+        if (/^https?:\/\//i.test(ev.comunidade || '')) {
+          var botaoComunidade =
+            '<a class="btn-comprar-grande comunidade" target="_blank" rel="noopener" href="' + esc(ev.comunidade) + '">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+              '<span class="textos">' +
+                '<span class="rotulo">Entrar na comunidade</span>' +
+                '<span class="sub"><b>Grupo oficial</b> · novidades e avisos</span>' +
+              '</span>' +
+              '<svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>' +
+            '</a>';
+          // entra logo abaixo dos botões de compra (antes do aviso)
+          var posObs = compraHtml.indexOf('<div class="modal-obs');
+          compraHtml = posObs === -1 ? compraHtml + botaoComunidade
+            : compraHtml.slice(0, posObs) + botaoComunidade + compraHtml.slice(posObs);
+        }
         compraHtml +=
           '<div class="modal-duvida">Ficou com alguma dúvida? ' +
             '<a target="_blank" rel="noopener" href="' +
@@ -1548,10 +1587,12 @@
         eventos.forEach(function (ev) { grade.appendChild(montarCard(ev)); });
         cards = grade.querySelectorAll('.card');
         // Esconde os filtros sem nenhum evento (ex.: nada acontecendo essa semana),
-        // pra não levar o visitante a uma lista vazia.
+        // pra não levar o visitante a uma lista vazia. As temporadas fixas
+        // (data-sempre: Réveillon, Carnaval, Universitárias) ficam sempre no menu
+        // e, vazias, mostram um "em breve" com opção de ser avisado.
         botoes.forEach(function (btn) {
           var cat = btn.dataset.cat;
-          if (cat === 'todos') return;
+          if (cat === 'todos' || btn.hasAttribute('data-sempre')) return;
           btn.hidden = !grade.querySelector('.card[data-cat~="' + cat + '"]');
         });
         var ativoBtn = document.querySelector('.filtros button.ativo');
@@ -1594,6 +1635,13 @@
         });
         titulo.textContent = rotulos[cat] || 'Eventos';
         vazio.hidden = visiveis > 0;
+        if (!visiveis) {
+          var nome = rotulos[cat] || 'eventos';
+          vazio.querySelector('.vazio-texto').textContent =
+            'Os eventos de ' + nome + ' estão chegando. Quer ser avisado(a) assim que abrirem os ingressos?';
+          vazio.querySelector('#vazio-avisar').href =
+            flowLinkContato('🎟️ Olá! Quero ser avisado(a) quando abrirem os ingressos de ' + nome + '.');
+        }
       }
 
       botoes.forEach(function (btn) {
