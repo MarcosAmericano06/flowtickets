@@ -1,0 +1,51 @@
+# Robô que mantém as páginas do link direto de cada evento (e/<slug>/)
+# em dia com o que a equipe salva no painel. Roda a cada ~15 min, e também
+# quando o modelo (evento.html) ou o gerador mudam. Só faz commit se algo
+# mudou de fato. Repositório público: GitHub Actions não cobra.
+name: Páginas dos eventos
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - evento.html
+      - scripts/gerar_paginas_eventos.py
+      - .github/workflows/paginas-eventos.yml
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: paginas-eventos
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gerar páginas
+        run: python3 scripts/gerar_paginas_eventos.py
+
+      - name: Publicar se mudou
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain -- e 404.html)" ]; then
+            echo "Nada mudou."
+            exit 0
+          fi
+          git config user.name "flow-robo"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- e 404.html
+          git commit -m "Atualiza páginas dos eventos [robô]"
+          git pull --rebase -q origin main
+          git push
+          # push feito pelo robô não dispara o GitHub Pages sozinho: pede o build
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true

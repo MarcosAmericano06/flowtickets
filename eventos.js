@@ -279,6 +279,91 @@ function flowCategoriasDoEvento(ev, hoje) {
   return cats;
 }
 
+// ===== Link permanente de cada evento ======================================
+// Cada evento tem um `slug` (ex.: "reveillon-riviera") gravado UMA vez, na
+// criação, e nunca mais muda — mesmo que o nome do evento seja editado.
+// O link compartilhável é https://flowtickets.cloud/e/<slug>/
+// (as páginas /e/... são geradas pelo robô .github/workflows/paginas-eventos.yml;
+//  enquanto a página não existe, o 404.html abre o evento do mesmo jeito).
+
+function flowSlugify(txt) {
+  return String(txt || '').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 60).replace(/-+$/, '') || 'evento';
+}
+
+// Garante slug único em todos os eventos da lista (preenche só os que faltam).
+// Retorna true se algum evento ganhou slug novo (o painel então salva).
+// ATENÇÃO: a mesma regra existe em scripts/gerar_paginas_eventos.py.
+function flowGarantirSlugs(lista) {
+  var usados = {};
+  var mudou = false;
+  lista.forEach(function (ev) { if (ev.slug) usados[ev.slug] = true; });
+  lista.forEach(function (ev) {
+    if (ev.slug) return;
+    var base = flowSlugify(ev.nome), s = base, n = 2;
+    while (usados[s]) s = base + '-' + (n++);
+    ev.slug = s;
+    usados[s] = true;
+    mudou = true;
+  });
+  return mudou;
+}
+
+function flowSlugEvento(ev) {
+  return ev.slug || flowSlugify(ev.nome);
+}
+
+function flowAcharEvento(lista, slug) {
+  slug = String(slug || '').toLowerCase();
+  for (var i = 0; i < lista.length; i++) {
+    if (lista[i].slug === slug || lista[i].id === slug) return lista[i];
+  }
+  // eventos antigos ainda sem slug gravado
+  for (var j = 0; j < lista.length; j++) {
+    if (!lista[j].slug && flowSlugify(lista[j].nome) === slug) return lista[j];
+  }
+  return null;
+}
+
+var FLOW_SITE = 'https://flowtickets.cloud';
+function flowLinkEvento(ev) {
+  var base = /^https?:$/.test(location.protocol) && !/flowtickets\.cloud$/.test(location.hostname)
+    ? location.origin : FLOW_SITE; // em teste local, aponta pro servidor local
+  return base + '/e/' + flowSlugEvento(ev) + '/';
+}
+
+// ===== Status do evento ======================================================
+// ev.status (escolhido no painel):
+//   ''        = Automático: vendas abertas até a data passar; depois, pós-evento
+//   'proximo' = Vendas ainda não abertas → botão "Fique por dentro"
+//   'ativo'   = Vendas abertas (força, mesmo com a data já passada — reativar)
+//   'pos'     = Pós-evento: sai da vitrine, sem compra; página continua no link
+// flowStatusEvento devolve o status EFETIVO: 'proximo' | 'ativo' | 'pos'.
+var FLOW_STATUS = {
+  '':        'Automático (pela data)',
+  'proximo': 'Vendas em breve',
+  'ativo':   'Vendas abertas',
+  'pos':     'Pós-evento'
+};
+
+function flowStatusEvento(ev, hoje) {
+  if (ev.status === 'pos') return 'pos';
+  if (ev.status === 'ativo') return 'ativo';
+  var p = flowPeriodoEvento(ev, hoje);
+  if (p && p.fim < (hoje || flowHoje())) return 'pos';
+  return ev.status === 'proximo' ? 'proximo' : 'ativo';
+}
+
+// Comunidade oficial da Flow (config do painel). Sem link cadastrado, cai no
+// WhatsApp de atendimento com uma mensagem pronta.
+function flowLinkComunidadeFlow(msg) {
+  var link = flowCarregarConfig().comunidadeFlow || '';
+  if (/^https?:\/\//i.test(link)) return link;
+  return flowLinkContato(msg || '🎟️ Olá! Quero entrar na comunidade da Flow e saber dos próximos eventos.');
+}
+
 function flowCarregarEventos() {
   try {
     var salvos = JSON.parse(localStorage.getItem('flow_eventos'));

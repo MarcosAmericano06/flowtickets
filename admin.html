@@ -205,6 +205,14 @@
       color: #f87171;
       border-color: rgba(220, 38, 38, 0.4);
     }
+    .item .etiqueta.st-proximo { background: rgba(255,122,26,0.15); color: #ffb27a; border-color: rgba(255,122,26,0.45); }
+    .item .etiqueta.st-pos { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+    .item.pos { opacity: 0.6; }
+    .item.pos:hover { opacity: 1; }
+    .item .etiqueta.concierge { background: rgba(122,47,247,0.18); color: #c4a6ff; border-color: rgba(122,47,247,0.5); }
+    .link-evento { display: flex; gap: 8px; align-items: center; }
+    .link-evento input { flex: 1; }
+    .status-dica { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
     .item .cliques { font-size: 13px; color: var(--magenta); font-weight: 700; white-space: nowrap; }
     .item .botoes { display: flex; gap: 8px; }
     .item .botoes button {
@@ -373,6 +381,28 @@
         <input type="date" id="f-data-iso">
       </div>
       <div class="campo">
+        <label for="f-status">Status do evento</label>
+        <select id="f-status">
+          <option value="">Automático — vendas abertas até a data; depois vira Pós-evento</option>
+          <option value="proximo">Vendas em breve — botão "Fique por dentro" (comunidade)</option>
+          <option value="ativo">Vendas abertas — força (mesmo com a data passada)</option>
+          <option value="pos">Pós-evento — sai da vitrine, sem compra</option>
+        </select>
+        <div class="status-dica" id="f-status-dica"></div>
+      </div>
+      <div class="campo checkbox">
+        <input type="checkbox" id="f-concierge">
+        <label for="f-concierge">Concierge — mostrar o botão CONCIERGE (Pix sem taxa de serviço) neste evento</label>
+      </div>
+      <div class="campo largo" id="box-link-evento" hidden>
+        <label>Link direto do evento <small>(permanente — mande para o cliente pelo WhatsApp/Instagram)</small></label>
+        <div class="link-evento">
+          <input type="text" id="f-link-evento" readonly onclick="this.select()">
+          <button type="button" class="btn btn-fantasma" id="btn-copiar-link">Copiar</button>
+          <a class="btn btn-fantasma" id="btn-abrir-link" target="_blank" rel="noopener">Abrir</a>
+        </div>
+      </div>
+      <div class="campo">
         <label for="f-local">Local <small>(opcional)</small></label>
         <input type="text" id="f-local" placeholder="Ex.: Hangar Campo de Marte">
       </div>
@@ -476,6 +506,16 @@
       </p>
     </div>
 
+    <h2>Comunidade oficial da Flow</h2>
+    <div class="config">
+      <div class="campo" style="flex:1">
+        <label for="f-comunidade-flow">Link da comunidade da Flow no WhatsApp <small>(botões "Próximos eventos" e "Fique por dentro")</small></label>
+        <input type="text" id="f-comunidade-flow" placeholder="https://chat.whatsapp.com/...">
+      </div>
+      <button class="btn btn-primario" id="btn-salvar-comunidade">Salvar link</button>
+    </div>
+    <p class="aviso">Enquanto estiver vazio, esses botões abrem o WhatsApp de atendimento.</p>
+
     <h2>WhatsApps que recebem os pedidos</h2>
     <div class="config" style="flex-direction: column; align-items: stretch;">
       <div class="numeros" id="lista-numeros"></div>
@@ -527,7 +567,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="flow-cloud.js?v=1"></script>
-  <script src="eventos.js?v=20260924"></script>
+  <script src="eventos.js?v=20261014"></script>
   <script>
     (function () {
       var eventos = flowCarregarEventos();
@@ -563,12 +603,14 @@
       }
 
       function desenharResumo() {
-        var esgotados = eventos.filter(function (e) { return e.esgotado; }).length;
+        var esgotados = eventos.filter(function (e) { return e.esgotado && flowStatusEvento(e) !== 'pos'; }).length;
+        var aVenda = eventos.filter(function (e) { return !e.esgotado && flowStatusEvento(e) === 'ativo'; }).length;
+        var noSite = eventos.filter(function (e) { return flowStatusEvento(e) !== 'pos'; }).length;
         var cliques = flowCarregarCliques();
         var totalCliques = 0;
         Object.keys(cliques).forEach(function (k) { totalCliques += cliques[k]; });
-        $('stat-total').textContent = eventos.length;
-        $('stat-venda').textContent = eventos.length - esgotados;
+        $('stat-total').textContent = noSite;
+        $('stat-venda').textContent = aVenda;
         $('stat-esgotados').textContent = esgotados;
         $('stat-cliques').textContent = totalCliques;
       }
@@ -582,7 +624,10 @@
           return;
         }
 
-        eventos.forEach(function (ev) {
+        // Pós-eventos vão para o fim da lista (continuam editáveis/reativáveis).
+        var ordenados = eventos.filter(function (e) { return flowStatusEvento(e) !== 'pos'; })
+          .concat(eventos.filter(function (e) { return flowStatusEvento(e) === 'pos'; }));
+        ordenados.forEach(function (ev) {
           var item = document.createElement('div');
           item.className = 'item';
 
@@ -613,10 +658,18 @@
           dados.appendChild(meta);
           item.appendChild(dados);
 
+          var st = flowStatusEvento(ev);
+          if (st === 'pos') item.classList.add('pos');
           var etiqueta = document.createElement('span');
-          etiqueta.className = 'etiqueta' + (ev.esgotado ? ' esgotado' : '');
-          etiqueta.textContent = ev.esgotado ? 'Esgotado' : (ev.selo || 'À venda');
+          etiqueta.className = 'etiqueta' + (st === 'pos' ? ' st-pos' : st === 'proximo' ? ' st-proximo' : ev.esgotado ? ' esgotado' : '');
+          etiqueta.textContent = st === 'pos' ? 'Pós-evento' : st === 'proximo' ? 'Vendas em breve' : ev.esgotado ? 'Esgotado' : 'À venda';
           item.appendChild(etiqueta);
+          if (ev.concierge) {
+            var etqC = document.createElement('span');
+            etqC.className = 'etiqueta concierge';
+            etqC.textContent = 'Concierge';
+            item.appendChild(etqC);
+          }
 
           var cli = document.createElement('span');
           cli.className = 'cliques';
@@ -643,6 +696,13 @@
             }
           });
 
+          var btnLink = document.createElement('button');
+          btnLink.className = 'btn btn-fantasma';
+          btnLink.textContent = 'Copiar link';
+          btnLink.title = FLOW_SITE + '/e/' + flowSlugEvento(ev) + '/';
+          btnLink.addEventListener('click', function () { copiarTexto(btnLink.title); });
+
+          botoes.appendChild(btnLink);
           botoes.appendChild(btnEditar);
           botoes.appendChild(btnRemover);
           item.appendChild(botoes);
@@ -715,6 +775,8 @@
           local: $('f-local').value.trim(),
           cidade: $('f-cidade').value.trim() || 'São Paulo · SP',
           dataISO: $('f-data-iso').value,
+          status: $('f-status').value,
+          concierge: $('f-concierge').checked,
           categorias: lerCategorias(),
           categoria: lerCategorias()[0] || 'proximas',
           tipos: $('f-tipos').value.trim(),
@@ -742,6 +804,37 @@
         if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
         return v;
       }
+
+      // Link direto do evento (só aparece quando o evento já existe).
+      function mostrarLinkEvento(ev) {
+        var box = $('box-link-evento');
+        if (!ev || !ev.slug) { box.hidden = true; return; }
+        var url = FLOW_SITE + '/e/' + ev.slug + '/';
+        $('f-link-evento').value = url;
+        $('btn-abrir-link').href = url;
+        box.hidden = false;
+      }
+      $('btn-copiar-link').addEventListener('click', function () {
+        copiarTexto($('f-link-evento').value);
+      });
+      function copiarTexto(txt) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(txt).then(function () { avisar('Link copiado ✓'); },
+            function () { prompt('Copie o link:', txt); });
+        } else { prompt('Copie o link:', txt); }
+      }
+
+      // Mostra qual status vale HOJE com o que está no formulário.
+      function mostrarDicaStatus() {
+        var efetivo = flowStatusEvento({ status: $('f-status').value, data: $('f-data').value, dataISO: $('f-data-iso').value });
+        var nomes = { proximo: 'Vendas em breve', ativo: 'Vendas abertas', pos: 'Pós-evento (fora da vitrine)' };
+        $('f-status-dica').textContent = 'Hoje este evento aparece como: ' + nomes[efetivo] + '.';
+      }
+      ['f-status', 'f-data', 'f-data-iso'].forEach(function (id) {
+        $(id).addEventListener('input', mostrarDicaStatus);
+        $(id).addEventListener('change', mostrarDicaStatus);
+      });
+      mostrarDicaStatus();
 
       function lerCategorias() {
         return Array.prototype.map.call(
@@ -778,6 +871,10 @@
         $('f-local').value = ev.local || '';
         $('f-cidade').value = ev.cidade || 'São Paulo · SP';
         $('f-data-iso').value = ev.dataISO || '';
+        $('f-status').value = ev.status || '';
+        $('f-concierge').checked = !!ev.concierge;
+        mostrarLinkEvento(ev);
+        mostrarDicaStatus();
         marcarCategorias(flowCategoriasManuais(ev));
         $('f-tipos').value = ev.tipos || '';
         $('f-labels').value = ev.labels || '';
@@ -811,6 +908,8 @@
       function cancelarEdicao() {
         editandoId = null;
         form.reset();
+        mostrarLinkEvento(null);
+        mostrarDicaStatus();
         mostrarCatsAuto();
         $('f-cidade').value = 'São Paulo · SP';
         document.getElementById('titulo-form').textContent = 'Adicionar evento';
@@ -829,6 +928,8 @@
         if (editandoId) {
           var i = eventos.findIndex(function (ev) { return ev.id === editandoId; });
           if (i !== -1) {
+            // Mantém o que não está no formulário (ex.: slug do link direto).
+            dados = Object.assign({}, eventos[i], dados);
             dados.id = editandoId;
             eventos[i] = dados;
           }
@@ -836,6 +937,7 @@
         } else {
           dados.id = 'ev-' + Date.now();
           eventos.push(dados);
+          flowGarantirSlugs(eventos); // link direto permanente
           avisar('Evento adicionado ao site.');
         }
         cancelarEdicao();
@@ -942,12 +1044,26 @@
         if (!numeros.length) { avisar('Cadastre ao menos um número.'); return; }
         if (!padraoNum) padraoNum = numeros[0].numero; // se ninguém marcou, o 1º é padrão
 
-        flowSalvarConfig({ whats: padraoNum, numeros: numeros });
+        // mantém os outros campos da config (ex.: comunidade da Flow)
+        flowSalvarConfig(Object.assign(flowCarregarConfig(), { whats: padraoNum, numeros: numeros }));
         desenharNumeros();
         preencherSelectNumeros();
         avisar('WhatsApps salvos.');
         sincronizarNuvem();
       });
+
+      function desenharComunidadeFlow() {
+        $('f-comunidade-flow').value = flowCarregarConfig().comunidadeFlow || '';
+      }
+      $('btn-salvar-comunidade').addEventListener('click', function () {
+        var link = normalizarLink($('f-comunidade-flow').value);
+        if (link && !/^https:\/\/[^\s]+\.[^\s]+/.test(link)) { avisar('Esse link não parece válido.'); return; }
+        flowSalvarConfig(Object.assign(flowCarregarConfig(), { comunidadeFlow: link }));
+        desenharComunidadeFlow();
+        avisar('Link da comunidade salvo.');
+        sincronizarNuvem();
+      });
+      desenharComunidadeFlow();
 
       // Backup
       $('btn-backup').addEventListener('click', function () {
@@ -1496,9 +1612,13 @@
               flowSalvarEventos(eventos);
             }
             if (dados && dados.config) flowSalvarConfig(dados.config);
+            // Eventos antigos ganham o link direto permanente (uma vez só).
+            // Só quando os eventos vieram mesmo da nuvem.
+            if (dados && dados.eventos && dados.eventos.length && flowGarantirSlugs(eventos)) salvar();
             desenharTudo();
             desenharNumeros();
             preencherSelectNumeros();
+            desenharComunidadeFlow();
           }).catch(function (err) { console.warn('Carga da nuvem falhou:', err); });
         });
       })();
