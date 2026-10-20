@@ -1203,3 +1203,17 @@ footer ul a:hover { color: #ff5c8a; }
 }
 .pagina-evento ~ footer { padding-top: 4px; }
 .pagina-evento ~ footer .rodape-base { margin-top: 0; border-top: none; }
+
+/* ===== Grupos da vitrine: Universitários / Demais eventos ===== */
+.grade .grupo-titulo {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--magenta);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--borda);
+  margin-top: 8px;
+}
+.grade .grupo-titulo ~ .grupo-titulo { margin-top: 24px; }

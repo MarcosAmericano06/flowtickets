@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Caveat+Brush&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/flow.css?v=20261014">
+  <link rel="stylesheet" href="/flow.css?v=20261019">
 </head>
 <body>
 
@@ -213,7 +213,7 @@
   </footer>
 
   <script src="/flow-cloud.js?v=1"></script>
-  <script src="/eventos.js?v=20261014"></script>
+  <script src="/eventos.js?v=20261019"></script>
   <script src="/flow-evento.js?v=20261014"></script>
   <script>
     (function () {
@@ -374,8 +374,29 @@
       function renderizarGrade(eventos) {
         grade.innerHTML = '';
         // Pós-evento não aparece na vitrine (continua acessível pelo link direto).
-        eventos.forEach(function (ev) {
-          if (flowStatusEvento(ev) !== 'pos') grade.appendChild(montarCard(ev));
+        // Ordem por data (mais próximo primeiro), em dois grupos:
+        // Universitários (categoria "Festas Universitárias") e Demais eventos.
+        // Nos filtros, os títulos somem e os cards seguem só a ordem de data
+        // (via CSS order — ver filtrar()).
+        var futuros = flowOrdenarPorData(eventos.filter(function (ev) {
+          return flowStatusEvento(ev) !== 'pos';
+        }));
+        var posicao = new Map();
+        futuros.forEach(function (ev, i) { posicao.set(ev, i); });
+        [
+          ['Universitários', futuros.filter(flowEhUniversitario)],
+          ['Demais eventos', futuros.filter(function (ev) { return !flowEhUniversitario(ev); })]
+        ].forEach(function (grupo) {
+          if (!grupo[1].length) return;
+          var h = document.createElement('h3');
+          h.className = 'grupo-titulo';
+          h.textContent = grupo[0];
+          grade.appendChild(h);
+          grupo[1].forEach(function (ev) {
+            var card = montarCard(ev);
+            card.dataset.ordem = posicao.get(ev);
+            grade.appendChild(card);
+          });
         });
         cards = grade.querySelectorAll('.card');
         // Esconde os filtros sem nenhum evento (ex.: nada acontecendo essa semana),
@@ -421,11 +442,16 @@
 
       function filtrar(cat) {
         var visiveis = 0;
+        var todos = cat === 'todos';
         cards.forEach(function (card) {
-          var mostra = cat === 'todos' ||
+          var mostra = todos ||
             (card.dataset.cat || '').split(' ').indexOf(cat) !== -1;
           card.style.display = mostra ? '' : 'none';
+          card.style.order = todos ? '' : card.dataset.ordem;
           if (mostra) visiveis++;
+        });
+        grade.querySelectorAll('.grupo-titulo').forEach(function (h) {
+          h.style.display = todos ? '' : 'none';
         });
         titulo.textContent = rotulos[cat] || 'Eventos';
         vazio.hidden = visiveis > 0;

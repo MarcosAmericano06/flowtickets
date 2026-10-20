@@ -279,6 +279,21 @@ function flowCategoriasDoEvento(ev, hoje) {
   return cats;
 }
 
+// Ordena por data (o mais próximo primeiro). Evento de vários dias conta pelo
+// primeiro dia; sem data reconhecível vai para o fim, na ordem do cadastro.
+function flowOrdenarPorData(lista, hoje) {
+  return lista.map(function (ev, i) {
+    var p = flowPeriodoEvento(ev, hoje);
+    return { ev: ev, t: p ? p.inicio.getTime() : Infinity, i: i };
+  }).sort(function (a, b) {
+    return a.t !== b.t ? (a.t < b.t ? -1 : 1) : a.i - b.i;
+  }).map(function (x) { return x.ev; });
+}
+
+function flowEhUniversitario(ev) {
+  return flowCategoriasManuais(ev).indexOf('universitarias') !== -1;
+}
+
 // ===== Link permanente de cada evento ======================================
 // Cada evento tem um `slug` (ex.: "reveillon-riviera") gravado UMA vez, na
 // criação, e nunca mais muda — mesmo que o nome do evento seja editado.
